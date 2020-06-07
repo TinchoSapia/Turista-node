@@ -1,74 +1,38 @@
+
+const mongoose = require('mongoose')
 const User = require('../src/models/user')
-const chalk= require('chalk')
+const service = require('../service/index')
 
-function getUsers(req, res){
-    User.find({}, (err, user) =>{
-        if(err)  res.status(500).send({message: `Error al buscar usuarios ${err}`})
-        if(!user) res.status(404).send({message: `No hay usuarios registrados`})
+function singUp(req, res){
+    const user = new User({
+        email: req.body.email,
+        name: req.body.name,
+        apellido: req.body.apellido,
+        role: req.body.role,
+        password: req.body.password
 
-        res.status(200).send({user})
-    } )
-}
+    })
+    user.save((err)=>{
+        if (err) res.status(500).send({message: `Error al salvar el usuario ${err}`})
 
-function getUser(req, res){
-    let userId = req.params.userId
-    User.findById(userId, (err, user) =>{
-        if(!user) res.status(404).send({message: `Usuario inexistente`})
-        if(err)  res.status(500).send({message: `Error al buscar usuarios ${err}`})
-
-        res.status(200).send({user})
-    } )
-}
-
-function postUser(req, res){
-    console.log(chalk.yellow('POST /api/user/'))
-    console.log(req.body)
-
-    let user = new User()
-    user.name = req.body.name
-    user.email = req.body.email
-    user.password = req.body.password
-    user.role = req.body.role
-    
-
-    user.save((err, productStored) => {
-        if(err) res.status(500).send({message: `Error al salvar en la base de datos: ${err}`})
-
-        res.status(200).send({user: productStored})
- 
+        return res.status(200).send({token: service.createToken(user)})
     })
 }
 
-function updateUser(req, res){
-    let userId = req.params.userId;
-    let update = req.body
-
-    User.findByIdAndUpdate(userId, update,(err, user)=>{
-        if(err) res.status(500).send({message: `Error al actualizar usuario ${err}`})
-
-            res.status(200).send({message: `El usuario ha sido actualizado`})
+function singIn(req, res){
+    User.find({email: req.body.email},(err,user)=>{
+        if(err) res.status(500).send({message: err})
+        if(!user) res.status(404).send({message: `Usuario no encontrado`})
         
-    })
-}
-
-function deleteUser(req, res){
-    let userId = req.params.userId;
-
-    User.findById(userId, (err, user)=>{
-        if(err) res.status(500).send({message: `Error al eliminar usuario ${err}`})
-
-        user.delete(err =>{
-            if(err) res.status(500).send({message: `Error al eliminar usuario ${err}`})
-
-            res.status(200).send({message: `El usuario ha sido eliminado`})
+        req.user = user
+        res.status(200).send({
+            message: `Te has logeado correctamente`,
+            Token: service.createToken(user)
         })
     })
 }
 
-module.exports ={
-    getUsers,
-    getUser,
-    updateUser,
-    deleteUser,
-    postUser
+module.exports = {
+    singUp,
+    singIn
 }

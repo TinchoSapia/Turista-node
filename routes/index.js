@@ -5,10 +5,15 @@ const api = express.Router()
 const auth = require('../middleware/auth')
 const userController = require('../controllers/userController')
 
-api.get('/user/', userController.getUsers);
-api.get('/user/:userId', userController.getUser );
-api.post('/user/',  userController.postUser);
-api.put('/user/:userId',  userController.updateUser);
-api.delete('/user/:userId',auth.isAuth,  userController.deleteUser);
+//api.get('/user/', ejemploController.getEjemplos);
+//api.get('/user/:userId', ejemploController.getEjemplo );
+//api.post('/user/',  ejemploController.postUEjemplo);
+//api.put('/user/:userId',  ejemploController.updateEjemplo);
+//api.delete('/user/:userId' ejemploController.deleteEjemplo);
 
+api.post('/singup/', userController.singUp)
+api.post('/singup/', userController.singIn)
+api.get('/private', auth, (req,res)=>{
+    res.status(200).send('Tienes Acceso')
+})
 module.exports = api;
