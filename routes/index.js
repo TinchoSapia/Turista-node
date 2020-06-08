@@ -6,7 +6,7 @@ const api = express.Router()
 const roleGuia = require('../middleware/roleGuia')
 const ejemploController = require('../controllers/ejemploController')
 
-api.get('/user/',roleGuia,  ejemploController.getEjemplos);
+api.get('/user/', roleGuia,  ejemploController.getEjemplos);
 //api.get('/user/:userId', ejemploController.getEjemplo );
 //api.post('/user/',  ejemploController.postUEjemplo);
 //api.put('/user/:userId',  ejemploController.updateEjemplo);
