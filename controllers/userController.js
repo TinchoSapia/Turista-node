@@ -1,9 +1,11 @@
 
 const mongoose = require('mongoose')
 const User = require('../src/models/user')
+const chalk = require('chalk')
 const service = require('../service/index')
+const bcrypt = require('bcrypt-nodejs')
 
-function singUp(req, res){
+function signUp(req, res){
     const user = new User({
         email: req.body.email,
         name: req.body.name,
@@ -19,20 +21,32 @@ function singUp(req, res){
     })
 }
 
-function singIn(req, res){
-    User.find({email: req.body.email},(err,user)=>{
+function signIn(req, res){
+    User.findOne({email: req.body.email}, function(err,user){
         if(err) res.status(500).send({message: err})
         if(!user) res.status(404).send({message: `Usuario no encontrado`})
+        let userdata = user;
+        console.log(chalk.red(user))
+        bcrypt.compare(req.body.password, userdata.password, function (err, result) {
+            console.log(chalk.bgRed(String(userdata.password)))
+            if (result == true) {
+                user.lastLogin = Date.now()
+                res.status(200).send({
+                message: `Te has logeado correctamente`,
+                Token: service.createToken(user),
+                //localStorage: setItem('token', user.token)
         
-        req.user = user
-        res.status(200).send({
-            message: `Te has logeado correctamente`,
-            Token: service.createToken(user)
-        })
+              })
+                //res.redirect('/home');
+            } else {
+             res.status(403).send('Password Incorrecta ');
+             //res.redirect('/');
+            }
+          });     
     })
 }
 
 module.exports = {
-    singUp,
-    singIn
+    signUp,
+    signIn
 }

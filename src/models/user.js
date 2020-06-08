@@ -7,10 +7,13 @@ const UserSchema = Schema({
     email: { type: String, unique: true, lowercase: true},
     name: String,
     apellido:String,
-    password: {type: String, select:false},
+    password: String,
+    celular: String,
+    fechaDeNacimiento: Date,
+    genero: String,
     singupDate: {type: Date, default: Date.now()},
     lastLogin: Date,
-    role:  { type: String, enum:['Turista','Guia']}
+    role:  { type: String, enum:['Turista','Guía']}
 
 })
 
@@ -25,7 +28,7 @@ UserSchema.pre('save', function(next) {
        bcrypt.hash(user.password, salt, null, (err,hash) =>{
            if(err) return next(err)
 
-           user.password = hash
+           user.password = String(hash)
            next()
        })
    })

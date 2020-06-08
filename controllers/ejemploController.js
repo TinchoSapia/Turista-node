@@ -1,7 +1,7 @@
 const User = require('../src/models/user')
 const chalk= require('chalk')
 
-function getEjemplo(req, res){
+function getEjemplos(req, res){
     User.find({}, (err, user) =>{
         if(err)  res.status(500).send({message: `Error al buscar usuarios ${err}`})
         if(!user) res.status(404).send({message: `No hay usuarios registrados`})
@@ -10,7 +10,7 @@ function getEjemplo(req, res){
     } )
 }
 
-function getEjemplos(req, res){
+function getEjemplo(req, res){
     let userId = req.params.userId
     User.findById(userId, (err, user) =>{
         if(!user) res.status(404).send({message: `Usuario inexistente`})
