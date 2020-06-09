@@ -1,4 +1,4 @@
-const User = require('../src/models/user')
+const User = require('../models/user')
 const chalk= require('chalk')
 
 function getEjemplos(req, res){

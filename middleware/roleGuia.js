@@ -10,7 +10,7 @@ function esGuia(req,res,next){
 
         const token = req.headers.authorization.split(' ')[1] // la cabecera tiene 2 partes, la segunda parte es el token ( separados por un espacio " ")
         
-            if(String(jwt_decode(token).role === 'Guia')){
+            if(String(jwt_decode(token).role === 'Guía')){
                 console.log(chalk.red(jwt_decode(token).role))
                 next() 
             }else{
