@@ -12,7 +12,7 @@ const authRoutes = require('./routes/authRoutes')
 //Middleware
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json()); 
-app.use(auth); //authentication, solo si la ruta no es '/auth'
+app.use(auth); //authentication, solo si la ruta no es '/auth/signup o /auth/signin'
 
 //Routes
 app.use('/api',api)

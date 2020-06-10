@@ -12,7 +12,7 @@ function signUp(req, res){
         apellido: req.body.apellido,
         role: req.body.role,
         password: req.body.password,
-        //fechaDeNacimiento: req.body.fechaDeNacimiento,
+        fechaDeNacimiento: req.body.fechaDeNacimiento,
         genero: req.body.genero,
         celular: req.body.celular
     })
