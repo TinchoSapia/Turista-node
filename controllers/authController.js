@@ -1,6 +1,6 @@
 
 const mongoose = require('mongoose')
-const User = require('../src/models/user')
+const User = require('../models/user')
 const chalk = require('chalk')
 const service = require('../service/index')
 const bcrypt = require('bcrypt-nodejs')
@@ -8,11 +8,13 @@ const bcrypt = require('bcrypt-nodejs')
 function signUp(req, res){
     const user = new User({
         email: req.body.email,
-        name: req.body.name,
+        nombre: req.body.nombre,
         apellido: req.body.apellido,
         role: req.body.role,
-        password: req.body.password
-
+        password: req.body.password,
+        fechaDeNacimiento: req.body.fechaDeNacimiento,
+        genero: req.body.genero,
+        celular: req.body.celular
     })
     user.save((err)=>{
         if (err) res.status(500).send({message: `Error al salvar el usuario ${err}`})
@@ -39,7 +41,7 @@ function signIn(req, res){
               })
                 //res.redirect('/home');
             } else {
-             res.status(403).send('Password Incorrecta ');
+             res.status(403).send('Password Incorrecta');
              //res.redirect('/');
             }
           });     

@@ -3,18 +3,20 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const api = require('./routes/index')
-const Auth = require('./middleware/auth')
+const auth = require('./middleware/isAuth')
 
 const app = express();
-const user = require('./routes/user')
-
-app.use(Auth)
+const authRoutes = require('./routes/authRoutes')
 
 
+//Middleware
 app.use(bodyParser.urlencoded({extended: false}));
-app.use(bodyParser.json());
+app.use(bodyParser.json()); 
+app.use(auth); //authentication, solo si la ruta no es '/auth/signup o /auth/signin'
+
+//Routes
 app.use('/api',api)
-app.use('/user',user)
+app.use('/auth',authRoutes)
 
 
 

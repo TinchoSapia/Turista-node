@@ -2,7 +2,7 @@
 const service = require('../service/index')
 
 function isAuth(req,res,next){
-    if(req.path != '/user/'){
+    if(req.path != '/auth/signup' && req.path != '/auth/signin'){
         if (!req.headers.authorization){
             return res.status(403).send({message: 'No tienes autorizacion'})
         }
