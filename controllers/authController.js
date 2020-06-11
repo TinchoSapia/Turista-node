@@ -35,7 +35,8 @@ function signIn(req, res){
                 user.lastLogin = Date.now()
                 res.status(200).send({
                 message: `Te has logeado correctamente`,
-                Token: service.createToken(user),
+                token: service.createToken(user),
+                role: user.role,
                 //localStorage: setItem('token', user.token)
         
               })
