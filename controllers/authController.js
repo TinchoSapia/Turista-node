@@ -33,7 +33,7 @@ function signIn(req, res){
             console.log(chalk.bgRed(String(userdata.password)))
             if (result == true) {
                 user.lastLogin = Date.now()
-                res.status(200).send({
+                res.status(200).json({
                 message: `Te has logeado correctamente`,
                 token: service.createToken(user),
                 role: user.role,
