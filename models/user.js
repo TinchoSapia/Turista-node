@@ -13,7 +13,11 @@ const UserSchema = Schema({
     genero: String,
     singupDate: {type: Date, default: Date.now()},
     lastLogin: Date,
-    role:  { type: String, enum:['Turista','Guía']}
+    role:  { type: String, enum:['Turista','Guía']},
+    recorridos: [{
+        type: Schema.Types.ObjectId,
+        ref: 'recorrido'
+    }]
 
 })
 
