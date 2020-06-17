@@ -16,7 +16,6 @@ function isAuth(req,res,next){
         .catch(response=>{
             res.status(response.status)
         })
-        console.log(String(service.decodeToken(token)[1]))
     }else{
     next()
     }

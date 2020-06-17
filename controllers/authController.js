@@ -17,32 +17,37 @@ function signUp(req, res){
         celular: req.body.celular
     })
     user.save((err)=>{
-        if (err) res.status(500).send({message: `Error al salvar el usuario ${err}`})
-
+        if (err) {
+            return res.status(500).send({message: `Error al salvar el usuario ${err}`});
+        }
         return res.status(200).send({token: service.createToken(user)})
     })
 }
 
 function signIn(req, res){
     User.findOne({email: req.body.email}, function(err,user){
-        if(err) res.status(500).send({message: err})
-        if(!user) res.status(404).send({message: `Usuario no encontrado`})
+        if(err) {
+            return res.status(500).send({message: err});
+        }
+        if(!user) {
+            return res.status(404).send({message: `Usuario no encontrado`});
+        }
         let userdata = user;
         console.log(chalk.red(user))
         bcrypt.compare(req.body.password, userdata.password, function (err, result) {
             console.log(chalk.bgRed(String(userdata.password)))
             if (result == true) {
                 user.lastLogin = Date.now()
-                res.status(200).send({
+                return res.status(200).json({
                 message: `Te has logeado correctamente`,
                 token: service.createToken(user),
                 role: user.role,
                 //localStorage: setItem('token', user.token)
         
-              })
+              });
                 //res.redirect('/home');
             } else {
-             res.status(403).send('Password Incorrecta');
+                return res.status(403).send('Password Incorrecta');
              //res.redirect('/');
             }
           });     
