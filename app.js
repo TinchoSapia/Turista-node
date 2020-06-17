@@ -18,6 +18,4 @@ app.use(auth); //authentication, solo si la ruta no es '/auth/signup o /auth/sig
 app.use('/api',api)
 app.use('/auth',authRoutes)
 
-
-
 module.exports = app;
