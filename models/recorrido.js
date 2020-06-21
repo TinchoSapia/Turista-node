@@ -29,14 +29,14 @@ const pointSchema = new mongoose.Schema({
 
 const recorridoSchema = Schema({
     creadorId: { type: Schema.Types.ObjectId, ref:'user'},
-    /*puntoInicio: {
+    puntoInicio: {
         type: pointSchema,
         required: true
     },
     recorrido: {
         type: multiPointSchema,
         required: true
-      }*/
+    },
     maxParticipantes: { type: Number, required: true, },
     duracionMinutos: { type: Number, required: true },
     idioma: { type: String, required: true, lowercase: true },
