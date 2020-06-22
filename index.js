@@ -25,7 +25,7 @@ app.use(auth); //authentication, solo si la ruta no es '/auth/signup o /auth/sig
 //io listener
 io.on('connection', (socket) => {
     console.log('a user connected');
-  
+    
     socket.on('disconnect', () => {
       console.log('user disconnected');
     });
