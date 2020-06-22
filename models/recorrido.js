@@ -29,10 +29,10 @@ const pointSchema = new mongoose.Schema({
 */
 const recorridoSchema = Schema({
     creadorId: { type: Schema.Types.ObjectId, ref:'user'},
-    puntoInicio: { coordinates: {
-                                latitude: Number,
-                                longitude: Number,
-                }},
+    puntoInicio: {
+                  latitude: Number,
+                  longitude: Number,
+                },
     recorrido: [{ coordinates: {
                                 latitude: Number,
                                 longitude: Number,

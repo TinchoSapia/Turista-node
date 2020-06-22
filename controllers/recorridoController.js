@@ -43,10 +43,10 @@ function getRecorrido(req, res){
 }
 
 async function postRecorrido(req, res){
-   
+
     let userId = req.user;
     const user = await User.findById(userId);
-
+    console.log(req.body.puntoInicio)
     let recorrido = new Recorrido({
         creadorId : userId,
         puntoInicio : req.body.puntoInicio,
@@ -56,7 +56,7 @@ async function postRecorrido(req, res){
         idioma : req.body.idioma,
     })
     
-
+    console.log(recorrido);
     await recorrido.save(async (err, recorridoCreado) => {
         if(err){
              res.status(500).send({message: `Error al salvar en la base de datos: ${err}`});
