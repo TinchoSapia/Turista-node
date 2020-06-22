@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 
-//geoJSON multipoint schema, longitude viene PRIMERO en un array de coordenadas GeoJSON, NO latitude. (alreves)
+/*//geoJSON multipoint schema, longitude viene PRIMERO en un array de coordenadas GeoJSON, NO latitude. (alreves)
 const multiPointSchema = new mongoose.Schema({
     type: {
       type: String,
@@ -26,17 +26,19 @@ const pointSchema = new mongoose.Schema({
         required: true
       }
 })
-
+*/
 const recorridoSchema = Schema({
     creadorId: { type: Schema.Types.ObjectId, ref:'user'},
-    /*puntoInicio: {
-        type: pointSchema,
-        required: true
-    },
-    recorrido: {
-        type: multiPointSchema,
-        required: true
-      }*/
+    puntoInicio: {
+                  latitude: Number,
+                  longitude: Number,
+                },
+    recorrido: [{ coordinates: {
+                                latitude: Number,
+                                longitude: Number,
+                                },
+                  index: Number,
+               }],
     maxParticipantes: { type: Number, required: true, },
     duracionMinutos: { type: Number, required: true },
     idioma: { type: String, required: true, lowercase: true },
