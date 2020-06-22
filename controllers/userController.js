@@ -1,7 +1,7 @@
 const User = require('../models/user')
 const chalk= require('chalk')
 
-function getEjemplos(req, res){
+function getUsuarios(req, res){
     User.find({}, (err, user) =>{
         if(err)  res.status(500).send({message: `Error al buscar usuarios ${err}`})
         if(!user) res.status(404).send({message: `No hay usuarios registrados`})
@@ -10,7 +10,7 @@ function getEjemplos(req, res){
     } )
 }
 
-function getEjemplo(req, res){
+function getUsuario(req, res){
     let userId = req.params.userId
     User.findById(userId, (err, user) =>{
         if(!user) res.status(404).send({message: `Usuario inexistente`})
@@ -20,7 +20,7 @@ function getEjemplo(req, res){
     } )
 }
 
-function postEjemplo(req, res){
+function postUsuario(req, res){
     console.log(chalk.yellow('POST /api/user/'))
     console.log(req.body)
 
@@ -39,7 +39,7 @@ function postEjemplo(req, res){
     })
 }
 
-function updateEjemplo(req, res){
+function updateUsuario(req, res){
     let userId = req.params.userId;
     let update = req.body
 
@@ -51,7 +51,7 @@ function updateEjemplo(req, res){
     })
 }
 
-function deleteEjemplo(req, res){
+function deleteUsuario(req, res){
     let userId = req.params.userId;
 
     User.findById(userId, (err, user)=>{
@@ -66,9 +66,9 @@ function deleteEjemplo(req, res){
 }
 
 module.exports ={
-    getEjemplo,
-    getEjemplos,
-    updateEjemplo,
-    deleteEjemplo,
-    postEjemplo
+    getUsuario,
+    getUsuarios,
+    updateUsuario,
+    deleteUsuario,
+    postUsuario
 }
