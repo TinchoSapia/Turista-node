@@ -11,7 +11,7 @@ function getUsuarios(req, res){
 }
 
 function getUsuario(req, res){
-    let userId = req.params.userId
+    let userId = req.user;
     User.findById(userId, (err, user) =>{
         if(!user) res.status(404).send({message: `Usuario inexistente`})
         if(err)  res.status(500).send({message: `Error al buscar usuarios ${err}`})
@@ -20,28 +20,10 @@ function getUsuario(req, res){
     } )
 }
 
-function postUsuario(req, res){
-    console.log(chalk.yellow('POST /api/user/'))
-    console.log(req.body)
-
-    let user = new User()
-    user.name = req.body.name
-    user.email = req.body.email
-    user.password = req.body.password
-    user.role = req.body.role
-    
-
-    user.save((err, productStored) => {
-        if(err) res.status(500).send({message: `Error al salvar en la base de datos: ${err}`})
-
-        res.status(200).send({user: productStored})
- 
-    })
-}
 
 function updateUsuario(req, res){
-    let userId = req.params.userId;
-    let update = req.body
+    let userId = req.user;
+    let update = req.body;
 
     User.findByIdAndUpdate(userId, update,(err, user)=>{
         if(err) res.status(500).send({message: `Error al actualizar usuario ${err}`})
@@ -52,7 +34,7 @@ function updateUsuario(req, res){
 }
 
 function deleteUsuario(req, res){
-    let userId = req.params.userId;
+    let userId = req.user;
 
     User.findById(userId, (err, user)=>{
         if(err) res.status(500).send({message: `Error al eliminar usuario ${err}`})
