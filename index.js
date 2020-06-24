@@ -22,18 +22,26 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json()); 
 app.use(auth); //authentication, solo si la ruta no es '/auth/signup o /auth/signin'
 
+//Routes
+app.use('/api',apiRoutes)
+app.use('/auth',authRoutes)
+
+
 //io listener
 io.on('connection', (socket) => {
-    console.log('a user connected');
+
+    socket.on('shareGuideData', (data) => {
+        socket.broadcast.emit('guideData', data); //Crear en front un socket.on('guideData', (data)=> etc.) que recibe los datos del guia
+    });
+
+    socket.on('joinRecorrido', (recorrido) =>{
+        socket.join(recorrido);
+    })
     
     socket.on('disconnect', () => {
       console.log('user disconnected');
     });
 });
-
-//Routes
-app.use('/api',apiRoutes)
-app.use('/auth',authRoutes)
 
 
 //database connection + server listening
