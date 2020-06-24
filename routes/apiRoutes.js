@@ -8,8 +8,8 @@ const userController = require('../controllers/userController')
 const recorridoController = require('../controllers/recorridoController')
 
 //user controllers
-api.get('/user/',isAuth,  userController.getUsuarios);
-api.get('/user/:userId',isAuth, userController.getUsuario );
+api.get('/users/',isAuth,  userController.getUsuarios);
+api.get('/user/',isAuth, userController.getUsuario );
 api.put('/user/:userId',isAuth,  userController.updateUsuario);
 api.delete('/user/:userId',isAuth, userController.deleteUsuario);
 
