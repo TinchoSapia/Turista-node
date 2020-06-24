@@ -24,7 +24,7 @@ function decodeToken(token){
                })
             }
 
-            resolve(payload.sub)
+            resolve(payload.sub);
         
         }catch(err){
             reject({
