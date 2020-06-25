@@ -32,7 +32,7 @@ const RecorridoInstanciaSchema = Schema({
     },
   ],
   estado: { type: String, enum: ["Por empezar", "En curso", "Finalizado"] },
-  horarioComienzo: { type: Date, default: Date.now() },
+  horarioComienzo: Date,
 
   //fechaComienzo: Date,
 });

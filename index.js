@@ -26,17 +26,16 @@ app.use(auth); //authentication, solo si la ruta no es '/auth/signup o /auth/sig
 app.use('/api',apiRoutes)
 app.use('/auth',authRoutes)
 
-
 //io listener
 io.on('connection', (socket) => {
 
     socket.on('shareGuideData', (data) => {
         socket.broadcast.emit('guideData', data); //Crear en front un socket.on('guideData', (data)=> etc.) que recibe los datos del guia
     });
-
+    
     socket.on('joinRecorrido', (recorrido) =>{
-        socket.join(recorrido);
-    })
+        socket.join(recorrido);  
+    });
     
     socket.on('disconnect', () => {
       console.log('user disconnected');
