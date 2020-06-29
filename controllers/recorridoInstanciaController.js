@@ -27,7 +27,13 @@ async function postRecorridoInstancia(req, res){
     console.log(req.body);
     let recorridoInstancia = new RecorridoInstancia({
         guiaId : userId,
-        recorrido: req.body.recorrido,
+        recorrido: {
+            puntoInicio: req.body.recorrido.puntoInicio,
+            recorrido: req.body.recorrido.recorrido,
+            maxParticipantes: req.body.recorrido.maxParticipantes,
+            duracionMinutos: req.body.recorrido.duracionMinutos,
+            idioma: req.body.recorrido.idioma,
+          },
         estado: 'Por empezar',
         horarioComienzo: req.body.horarioComienzo,
     });
