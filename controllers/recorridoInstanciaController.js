@@ -24,7 +24,7 @@ async function postRecorridoInstancia(req, res){
 
     let userId = req.user;
     const user = await User.findById(userId);
-    
+    console.log(req.body);
     let recorridoInstancia = new RecorridoInstancia({
         guiaId : userId,
         recorrido: req.body.recorrido,
