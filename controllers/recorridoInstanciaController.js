@@ -34,7 +34,8 @@ async function postRecorridoInstancia(req, res){
     
     await recorridoInstancia.save(async (err, recorridoInstanciado) => {
         if(err){
-             res.status(500).send({message: `Error al salvar en la base de datos: ${err}`});
+             res.status(500).send({message: `Error al salvar en la base de datos: ${err}`,
+                                  recorrido: req.body.recorrido});
              return;
         }
 
