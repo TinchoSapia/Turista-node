@@ -29,5 +29,6 @@ api.put('/recorridoInstancia/unirse/:recorridoId', roleTurista,  recorridoInstan
 api.put('/recorridoInstancia/abandonar/:recorridoId', roleTurista,  recorridoInstanciaController.abandonarRecorridoInstancia);
 api.put('/recorridoInstancia/terminar/:recorridoId', roleGuia,  recorridoInstanciaController.terminarRecorridoInstancia);
 api.delete('/recorridoInstancia/cancelar/:recorridoId', roleGuia,  recorridoInstanciaController.cancelarRecorridoInstancia);
+api.put('/recorridoInstancia/iniciar/:recorridoId', roleGuia,  recorridoInstanciaController.iniciarRecorridoInstancia);
 
 module.exports = api;

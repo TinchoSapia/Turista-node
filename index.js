@@ -27,10 +27,25 @@ app.use('/api',apiRoutes)
 app.use('/auth',authRoutes)
 
 //io listener
+const recorridosActivos = [];
 io.on('connection', (socket) => {
 
-    socket.on('shareGuideData', (data) => {
+    socket.on('shareGuideLocation', (data) => {
         socket.broadcast.emit('guideData', data); //Crear en front un socket.on('guideData', (data)=> etc.) que recibe los datos del guia
+    });
+
+    socket.on('shareRecorridoActivo', (data) =>{
+        let recorrido = {
+            recorrido: data.recorrido,
+            id: data.key,
+        }
+        recorridosActivos.push(recorrido)
+        socket.join(data.key); 
+        let location = {
+            key: data.key,
+            coordinates: data.coordinates,
+        }
+        socket.broadcast.emit('guideData', location)
     });
     
     socket.on('joinRecorrido', (recorrido) =>{

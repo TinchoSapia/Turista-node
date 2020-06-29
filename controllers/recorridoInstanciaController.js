@@ -146,11 +146,38 @@ async function terminarRecorridoInstancia(req, res){
     })
 }
 
+//ESTADO EN CURSO RECORRIDO (GUIA)
+async function iniciarRecorridoInstancia(req, res){
+    let userId = req.user;
+    let recorridoId = req.params.recorridoId;
+    let recorridoEncontrado = await RecorridoInstancia.findById(recorridoId);
+    
+    if (recorridoEncontrado.guiaId != userId) {
+        res.status(403).send({message: `No tienes permiso para modificar este recorrido` });
+        return;
+    }
+
+    RecorridoInstancia.findById(recorridoId, (err, recorrido)=>{
+        if(err) {
+          res.status(500).send({message: `Error al encontrar recorrido ${err}`});
+          return;
+        }
+        recorrido.estado = "En curso";
+        recorrido.save(function(err) {
+            if (err){
+               return res.status(500).send({message: `Error al iniciar recorrido ${err}`});     
+            } 
+            return res.status(200).send({message: `El recorrido ha iniciado`});
+        })
+    })
+}
+
 module.exports ={
     getRecorridoInstancia,
     postRecorridoInstancia,
     unirseRecorridoInstancia,
     abandonarRecorridoInstancia,
     cancelarRecorridoInstancia,
-    terminarRecorridoInstancia
+    terminarRecorridoInstancia,
+    iniciarRecorridoInstancia,
 }
