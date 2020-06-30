@@ -24,6 +24,7 @@ const RecorridoInstanciaSchema = Schema({
     maxParticipantes: { type: Number },
     duracionMinutos: { type: Number },
     idioma: { type: String, lowercase: true },
+    nombre: {type: String}
   },
   usuariosInscriptos: [
     {

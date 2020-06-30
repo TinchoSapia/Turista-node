@@ -28,6 +28,7 @@ async function postRecorridoInstancia(req, res){
     let recorridoInstancia = new RecorridoInstancia({
         guiaId : userId,
         recorrido: {
+            nombre: req.body.recorrido.nombre,
             puntoInicio: req.body.recorrido.puntoInicio,
             recorrido: req.body.recorrido.recorrido,
             maxParticipantes: req.body.recorrido.maxParticipantes,
