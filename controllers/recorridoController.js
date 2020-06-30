@@ -49,6 +49,7 @@ async function postRecorrido(req, res){
     
     let recorrido = new Recorrido({
         creadorId : userId,
+        nombre: req.body.nombreRecorrido,
         puntoInicio : req.body.puntoInicio,
         recorrido : req.body.recorrido,
         maxParticipantes : req.body.maxParticipantes,

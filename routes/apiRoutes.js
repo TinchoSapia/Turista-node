@@ -23,11 +23,12 @@ api.put('/recorrido/:recorridoId', roleGuia,  recorridoController.updateRecorrid
 api.delete('/recorrido/:recorridoId', roleGuia,  recorridoController.deleteRecorrido);
 
 //recorrido instancia controllers
-api.get('/recorridoInstancia/:recorridoInstanciaId',  recorridoInstanciaController.getRecorridoInstancia);
+api.get('/recorridoInstancia/:recorridoInstanciaId', isAuth,  recorridoInstanciaController.getRecorridoInstancia);
 api.post('/recorridoInstancia/', roleGuia,  recorridoInstanciaController.postRecorridoInstancia);
 api.put('/recorridoInstancia/unirse/:recorridoId', roleTurista,  recorridoInstanciaController.unirseRecorridoInstancia);
 api.put('/recorridoInstancia/abandonar/:recorridoId', roleTurista,  recorridoInstanciaController.abandonarRecorridoInstancia);
 api.put('/recorridoInstancia/terminar/:recorridoId', roleGuia,  recorridoInstanciaController.terminarRecorridoInstancia);
 api.delete('/recorridoInstancia/cancelar/:recorridoId', roleGuia,  recorridoInstanciaController.cancelarRecorridoInstancia);
+api.put('/recorridoInstancia/iniciar/:recorridoId', roleGuia,  recorridoInstanciaController.iniciarRecorridoInstancia);
 
 module.exports = api;

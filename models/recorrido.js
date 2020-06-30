@@ -42,6 +42,7 @@ const recorridoSchema = Schema({
     maxParticipantes: { type: Number, required: true, },
     duracionMinutos: { type: Number, required: true },
     idioma: { type: String, required: true, lowercase: true },
+    nombre: { type: String, required: true, },
     
 });
 
