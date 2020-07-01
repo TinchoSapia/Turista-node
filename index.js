@@ -28,14 +28,23 @@ app.use('/auth',authRoutes)
 
 //io listener
 const recorridosActivos = [];
+const recorridosEnCurso = [];
 io.on('connection', (socket) => {
+    socket.emit('guidesData', recorridosActivos);
 
     socket.on('shareGuideLocation', (data) => {
+        recorridosActivos = recorridosActivos.map((recorrido)=>{
+            if(recorrido.id == data.key){
+                recorrido.locationActual = data.coordinates;
+            }
+                return recorrido;
+        })
         socket.broadcast.emit('guideData', data); //Crear en front un socket.on('guideData', (data)=> etc.) que recibe los datos del guia
     });
 
     socket.on('shareRecorridoActivo', (data) =>{
         let recorrido = {
+            locationActual: data.coordinates,
             recorrido: data.recorrido,
             id: data.key,
         }
@@ -47,6 +56,22 @@ io.on('connection', (socket) => {
         }
         socket.broadcast.emit('guideData', location)
     });
+
+    socket.on('cancelarRecorrido', (data)=>{
+        const nuevaLista =  recorridosActivos.filter((recorrido) => {
+           return recorrido.id != data.key;
+        });
+        recorridosActivos = nuevaLista;
+    })
+
+    socket.on('iniciarRecorrido', (data)=>{
+        const recorridoEncontrado = recorridosActivos.find(recorrido => recorrido.id == data.key); 
+        recorridosEnCurso.push(recorridoEncontrado);
+        const nuevaLista =  recorridosActivos.filter((recorrido) => {
+            return recorrido.id != data.key;
+         });
+         recorridosActivos = nuevaLista;
+    })
     
     socket.on('joinRecorrido', (recorrido) =>{
         socket.join(recorrido);  
