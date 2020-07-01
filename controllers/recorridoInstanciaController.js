@@ -6,7 +6,7 @@ const chalk= require('chalk')
 function getRecorridoInstancia(req, res){
     let recorridoInstanciaId = req.params.recorridoInstanciaId; // de la url, recordar agregar al path
     RecorridoInstancia.findById(recorridoInstanciaId, (err, recorrido) =>{
-        if(!recorridos){ 
+        if(!recorrido){ 
              res.status(404).send({message: `No existe el recorrido`});
              return;
         }
