@@ -39,7 +39,7 @@ io.on('connection', (socket) => {
             recorrido: data.recorrido,
             id: data.key,
         }
-        recorridosActivos.push(recorrido)
+        recorridosActivos.push(recorrido);
         socket.join(data.key); 
         let location = {
             key: data.key,
