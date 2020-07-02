@@ -6,7 +6,7 @@ const chalk= require('chalk')
 function getRecorridoInstancia(req, res){
     let recorridoInstanciaId = req.params.recorridoInstanciaId; // de la url, recordar agregar al path
     RecorridoInstancia.findById(recorridoInstanciaId, (err, recorrido) =>{
-        if(!recorridos){ 
+        if(!recorrido){ 
              res.status(404).send({message: `No existe el recorrido`});
              return;
         }
@@ -19,15 +19,18 @@ function getRecorridoInstancia(req, res){
     } )
 }
 
+
+
 //PUBLICAR RECORRIDO (GUIA)
 async function postRecorridoInstancia(req, res){
 
     let userId = req.user;
     const user = await User.findById(userId);
-    console.log(req.body);
+    console.log(req.body.recorrido.recorrido);
     let recorridoInstancia = new RecorridoInstancia({
         guiaId : userId,
         recorrido: {
+            nombre: req.body.recorrido.nombre,
             puntoInicio: req.body.recorrido.puntoInicio,
             recorrido: req.body.recorrido.recorrido,
             maxParticipantes: req.body.recorrido.maxParticipantes,
@@ -187,4 +190,5 @@ module.exports ={
     cancelarRecorridoInstancia,
     terminarRecorridoInstancia,
     iniciarRecorridoInstancia,
+    
 }

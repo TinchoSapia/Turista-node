@@ -26,38 +26,6 @@ app.use(auth); //authentication, solo si la ruta no es '/auth/signup o /auth/sig
 app.use('/api',apiRoutes)
 app.use('/auth',authRoutes)
 
-//io listener
-const recorridosActivos = [];
-io.on('connection', (socket) => {
-
-    socket.on('shareGuideLocation', (data) => {
-        socket.broadcast.emit('guideData', data); //Crear en front un socket.on('guideData', (data)=> etc.) que recibe los datos del guia
-    });
-
-    socket.on('shareRecorridoActivo', (data) =>{
-        let recorrido = {
-            recorrido: data.recorrido,
-            id: data.key,
-        }
-        recorridosActivos.push(recorrido)
-        socket.join(data.key); 
-        let location = {
-            key: data.key,
-            coordinates: data.coordinates,
-        }
-        socket.broadcast.emit('guideData', location)
-    });
-    
-    socket.on('joinRecorrido', (recorrido) =>{
-        socket.join(recorrido);  
-    });
-    
-    socket.on('disconnect', () => {
-      console.log('user disconnected');
-    });
-});
-
-
 //database connection + server listening
 mongoose.connect(process.env.DB, {useNewUrlParser:true, useUnifiedTopology:true}, (err,res) =>{
     if(err) {
@@ -65,7 +33,104 @@ mongoose.connect(process.env.DB, {useNewUrlParser:true, useUnifiedTopology:true}
     }
     console.log(chalk.green('Base de datos conectada..'))
 
-    server.listen(process.env.PORT || process.env.ALT_PORT, () => {
-        console.log(chalk.blue(`Corriendo en puerto: ${process.env.ALT_PORT}`))
+    server.listen(process.env.PORT, () => {
+        console.log(chalk.blue(`Corriendo en puerto: ${process.env.PORT}`))
+    });
+});
+//io listener
+/** 
+const recorridosActivosManager = require('./service/recorridoService');
+const recorridosActivos = recorridosActivosManager.getRecorridosActivos();
+const recorridosPorEmpezar = recorridosActivos.filter(function(recorrido){
+    return recorrido.estado == 'Por empezar';
+});
+const recorridosEnCurso = recorridosActivos.filter(function(recorrido){
+    return recorrido.estado == 'En curso';
+});*/
+
+let recorridosPorEmpezarSocket = [];
+let recorridosEnCursoSocket = [];
+io.on('connection', (socket) => {
+    /*recorridosPorEmpezarSocket = recorridosPorEmpezarSocket.filter((recorrido) =>{
+        let i = 0;
+        let isRecorridoEncontrado = false;
+        while(i< recorridosPorEmpezar.length && !isRecorridoEncontrado){
+           if(recorridosPorEmpezar[i]._id.toString() == recorrido.id){
+               isRecorridoEncontrado = true;
+           }else{
+               i++;
+           }
+        }
+        return isRecorridoEncontrado;
+    })*/
+    socket.emit('guidesData', recorridosPorEmpezarSocket);
+
+    socket.on('shareGuideLocation', (data) => {
+        recorridosPorEmpezarSocket = recorridosPorEmpezarSocket.map((recorrido)=>{
+            if(recorrido.id == data.key){
+                recorrido.locationActual = data.coordinates;
+            }
+                return recorrido;
+        })
+        socket.broadcast.emit('guideData', data); //Crear en front un socket.on('guideData', (data)=> etc.) que recibe los datos del guia
+    });
+
+    socket.on('shareRecorridoActivo', (data) =>{
+        const recorrido = {
+            locationActual: data.coordinates,
+            recorrido: data.recorrido,
+            id: data.key,
+        }
+        let i = 0;
+        let isRecorridoEncontrado = false;
+        while(i< recorridosPorEmpezarSocket.length && !isRecorridoEncontrado){
+           if(recorridosPorEmpezarSocket[i].key == data.key){
+               isRecorridoEncontrado = true;
+           }else{
+               i++;
+           }
+        }
+
+        if(isRecorridoEncontrado){
+            recorridosPorEmpezarSocket[i].locationActual = data.coordinates;
+            socket.join(data.key);
+        }else{
+            recorridosPorEmpezarSocket.push(recorrido);
+            socket.join(data.key);
+        }
+        let location = {
+            key: data.key,
+            coordinates: data.coordinates,
+        }
+        socket.broadcast.emit('guideData', location)
+    });
+
+    socket.on('cancelarRecorrido', (data)=>{
+        socket.leave(data.key);   
+        console.log('vieja lista: // ', recorridosPorEmpezarSocket)
+        const nuevaLista =  recorridosPorEmpezarSocket.filter((recorrido) => {
+           return recorrido.id != data.key;
+        });
+        recorridosPorEmpezarSocket = nuevaLista;
+        console.log('nueva lista: // ',nuevaLista);
+        
+        io.sockets.emit('guidesData', recorridosPorEmpezarSocket);
+    })
+
+    socket.on('iniciarRecorrido', (data)=>{
+        const recorridoEncontrado = recorridosPorEmpezarSocket.find(recorrido => recorrido.id == data.key); 
+        recorridosEnCursoSocket.push(recorridoEncontrado);
+        const nuevaLista =  recorridosPorEmpezarSocket.filter((recorrido) => {
+            return recorrido.id != data.key;
+         });
+         recorridosPorEmpezarSocket = nuevaLista;
+    })
+    
+    socket.on('joinRecorrido', (recorrido) =>{
+        socket.join(recorrido);  
+    });
+    
+    socket.on('disconnect', () => {
+      console.log('user disconnected');
     });
 });
