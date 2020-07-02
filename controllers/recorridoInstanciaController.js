@@ -19,6 +19,8 @@ function getRecorridoInstancia(req, res){
     } )
 }
 
+
+
 //PUBLICAR RECORRIDO (GUIA)
 async function postRecorridoInstancia(req, res){
 
@@ -188,4 +190,5 @@ module.exports ={
     cancelarRecorridoInstancia,
     terminarRecorridoInstancia,
     iniciarRecorridoInstancia,
+    
 }

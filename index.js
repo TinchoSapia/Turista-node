@@ -26,14 +26,47 @@ app.use(auth); //authentication, solo si la ruta no es '/auth/signup o /auth/sig
 app.use('/api',apiRoutes)
 app.use('/auth',authRoutes)
 
+//database connection + server listening
+mongoose.connect(process.env.DB, {useNewUrlParser:true, useUnifiedTopology:true}, (err,res) =>{
+    if(err) {
+        return console.log(chalk.red(`Error al intentar conectarse a la base de datos - ${err}`))
+    }
+    console.log(chalk.green('Base de datos conectada..'))
+
+    server.listen(process.env.PORT, () => {
+        console.log(chalk.blue(`Corriendo en puerto: ${process.env.PORT}`))
+    });
+});
 //io listener
-const recorridosActivos = [];
-const recorridosEnCurso = [];
+/** 
+const recorridosActivosManager = require('./service/recorridoService');
+const recorridosActivos = recorridosActivosManager.getRecorridosActivos();
+const recorridosPorEmpezar = recorridosActivos.filter(function(recorrido){
+    return recorrido.estado == 'Por empezar';
+});
+const recorridosEnCurso = recorridosActivos.filter(function(recorrido){
+    return recorrido.estado == 'En curso';
+});*/
+
+const recorridosPorEmpezarSocket = [];
+const recorridosEnCursoSocket = [];
 io.on('connection', (socket) => {
-    socket.emit('guidesData', recorridosActivos);
+    /*recorridosPorEmpezarSocket = recorridosPorEmpezarSocket.filter((recorrido) =>{
+        let i = 0;
+        let isRecorridoEncontrado = false;
+        while(i< recorridosPorEmpezar.length && !isRecorridoEncontrado){
+           if(recorridosPorEmpezar[i]._id.toString() == recorrido.id){
+               isRecorridoEncontrado = true;
+           }else{
+               i++;
+           }
+        }
+        return isRecorridoEncontrado;
+    })*/
+    socket.emit('guidesData', recorridosPorEmpezarSocket);
 
     socket.on('shareGuideLocation', (data) => {
-        recorridosActivos = recorridosActivos.map((recorrido)=>{
+        recorridosPorEmpezarSocket = recorridosPorEmpezarSocket.map((recorrido)=>{
             if(recorrido.id == data.key){
                 recorrido.locationActual = data.coordinates;
             }
@@ -50,8 +83,8 @@ io.on('connection', (socket) => {
         }
         let i = 0;
         let isRecorridoEncontrado = false;
-        while(i< recorridosActivos.length && !isRecorridoEncontrado){
-           if(recorridosActivos[i].key == data.key){
+        while(i< recorridosPorEmpezarSocket.length && !isRecorridoEncontrado){
+           if(recorridosPorEmpezarSocket[i].key == data.key){
                isRecorridoEncontrado = true;
            }else{
                i++;
@@ -59,10 +92,10 @@ io.on('connection', (socket) => {
         }
 
         if(isRecorridoEncontrado){
-            recorridosActivos[i].locationActual = data.coordinates;
+            recorridosPorEmpezarSocket[i].locationActual = data.coordinates;
             socket.join(data.key);
         }else{
-            recorridosActivos.push(recorrido);
+            recorridosPorEmpezarSocket.push(recorrido);
             socket.join(data.key);
         }
         let location = {
@@ -73,20 +106,20 @@ io.on('connection', (socket) => {
     });
 
     socket.on('cancelarRecorrido', (data)=>{
-        const nuevaLista =  recorridosActivos.filter((recorrido) => {
+        const nuevaLista =  recorridosPorEmpezarSocket.filter((recorrido) => {
            return recorrido.id != data.key;
         });
-        recorridosActivos = nuevaLista;
-        socket.emit('guidesData', recorridosActivos);
+        recorridosPorEmpezarSocket = nuevaLista;
+        socket.emit('guidesData', recorridosPorEmpezarSocket);
     })
 
     socket.on('iniciarRecorrido', (data)=>{
-        const recorridoEncontrado = recorridosActivos.find(recorrido => recorrido.id == data.key); 
-        recorridosEnCurso.push(recorridoEncontrado);
-        const nuevaLista =  recorridosActivos.filter((recorrido) => {
+        const recorridoEncontrado = recorridosPorEmpezarSocket.find(recorrido => recorrido.id == data.key); 
+        recorridosEnCursoSocket.push(recorridoEncontrado);
+        const nuevaLista =  recorridosPorEmpezarSocket.filter((recorrido) => {
             return recorrido.id != data.key;
          });
-         recorridosActivos = nuevaLista;
+         recorridosPorEmpezarSocket = nuevaLista;
     })
     
     socket.on('joinRecorrido', (recorrido) =>{
@@ -95,18 +128,5 @@ io.on('connection', (socket) => {
     
     socket.on('disconnect', () => {
       console.log('user disconnected');
-    });
-});
-
-
-//database connection + server listening
-mongoose.connect(process.env.DB, {useNewUrlParser:true, useUnifiedTopology:true}, (err,res) =>{
-    if(err) {
-        return console.log(chalk.red(`Error al intentar conectarse a la base de datos - ${err}`))
-    }
-    console.log(chalk.green('Base de datos conectada..'))
-
-    server.listen(process.env.PORT, () => {
-        console.log(chalk.blue(`Corriendo en puerto: ${process.env.PORT}`))
     });
 });
