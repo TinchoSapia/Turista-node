@@ -106,10 +106,12 @@ io.on('connection', (socket) => {
     });
 
     socket.on('cancelarRecorrido', (data)=>{
+        console.log('vieja lista: // ', viejaLista)
         const nuevaLista =  recorridosPorEmpezarSocket.filter((recorrido) => {
            return recorrido.id != data.key;
         });
         recorridosPorEmpezarSocket = nuevaLista;
+        console.log('nueva lista: // ',nuevaLista);
         socket.emit('guidesData', recorridosPorEmpezarSocket);
     })
 
