@@ -63,10 +63,7 @@ io.on('connection', (socket) => {
         }
         return isRecorridoEncontrado;
     })*/
-    const reload = function(){
-        socket.emit('guidesData', recorridosPorEmpezarSocket);
-    };
-    reload();
+    socket.emit('guidesData', recorridosPorEmpezarSocket);
 
     socket.on('shareGuideLocation', (data) => {
         recorridosPorEmpezarSocket = recorridosPorEmpezarSocket.map((recorrido)=>{
@@ -117,7 +114,7 @@ io.on('connection', (socket) => {
         recorridosPorEmpezarSocket = nuevaLista;
         console.log('nueva lista: // ',nuevaLista);
         
-        reload();
+        socket.emit('guidesData', nuevaLista);
     })
 
     socket.on('iniciarRecorrido', (data)=>{
