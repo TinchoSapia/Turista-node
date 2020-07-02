@@ -93,8 +93,10 @@ io.on('connection', (socket) => {
 
         if(isRecorridoEncontrado){
             recorridosPorEmpezarSocket[i].locationActual = data.coordinates;
+            socket.join(data.key);
         }else{
             recorridosPorEmpezarSocket.push(recorrido);
+            socket.join(data.key);
         }
         let location = {
             key: data.key,
@@ -104,7 +106,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('cancelarRecorrido', (data)=>{
-         
+        socket.leave(data.key);   
         console.log('vieja lista: // ', recorridosPorEmpezarSocket)
         const nuevaLista =  recorridosPorEmpezarSocket.filter((recorrido) => {
            return recorrido.id != data.key;
@@ -112,7 +114,7 @@ io.on('connection', (socket) => {
         recorridosPorEmpezarSocket = nuevaLista;
         console.log('nueva lista: // ',nuevaLista);
         
-        socket.emit('guidesData', nuevaLista);
+        io.sockets.emit('guidesData', recorridosPorEmpezarSocket);
     })
 
     socket.on('iniciarRecorrido', (data)=>{
