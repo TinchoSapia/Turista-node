@@ -48,8 +48,8 @@ const recorridosEnCurso = recorridosActivos.filter(function(recorrido){
     return recorrido.estado == 'En curso';
 });*/
 
-const recorridosPorEmpezarSocket = [];
-const recorridosEnCursoSocket = [];
+let recorridosPorEmpezarSocket = [];
+let recorridosEnCursoSocket = [];
 io.on('connection', (socket) => {
     /*recorridosPorEmpezarSocket = recorridosPorEmpezarSocket.filter((recorrido) =>{
         let i = 0;
@@ -76,7 +76,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('shareRecorridoActivo', (data) =>{
-        let recorrido = {
+        const recorrido = {
             locationActual: data.coordinates,
             recorrido: data.recorrido,
             id: data.key,
