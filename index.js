@@ -48,8 +48,23 @@ io.on('connection', (socket) => {
             recorrido: data.recorrido,
             id: data.key,
         }
-        recorridosActivos.push(recorrido);
-        socket.join(data.key); 
+        let i = 0;
+        let isRecorridoEncontrado = false;
+        while(i< recorridosActivos.length && !isRecorridoEncontrado){
+           if(recorridosActivos[i].key == data.key){
+               isRecorridoEncontrado = true;
+           }else{
+               i++;
+           }
+        }
+
+        if(isRecorridoEncontrado){
+            recorridosActivos[i].locationActual = data.coordinates;
+            socket.join(data.key);
+        }else{
+            recorridosActivos.push(recorrido);
+            socket.join(data.key);
+        }
         let location = {
             key: data.key,
             coordinates: data.coordinates,
@@ -62,6 +77,7 @@ io.on('connection', (socket) => {
            return recorrido.id != data.key;
         });
         recorridosActivos = nuevaLista;
+        socket.emit('guidesData', recorridosActivos);
     })
 
     socket.on('iniciarRecorrido', (data)=>{
