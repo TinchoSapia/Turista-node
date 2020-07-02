@@ -106,7 +106,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('cancelarRecorrido', (data)=>{
-        console.log('vieja lista: // ', viejaLista)
+        console.log('vieja lista: // ', recorridosPorEmpezarSocket)
         const nuevaLista =  recorridosPorEmpezarSocket.filter((recorrido) => {
            return recorrido.id != data.key;
         });
