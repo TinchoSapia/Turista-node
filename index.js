@@ -77,6 +77,7 @@ io.on('connection', (socket) => {
 
     socket.on('shareRecorridoActivo', (data) =>{
         const recorrido = {
+            usuariosInscriptos: data.usuariosInscriptos,
             locationActual: data.coordinates,
             recorrido: data.recorrido,
             id: data.key,
@@ -137,7 +138,7 @@ io.on('connection', (socket) => {
         }
 
         if(isRecorridoEncontrado){
-            recorridosPorEmpezarSocket[i]. = data.coordinates;
+            recorridosPorEmpezarSocket[i].usuariosInscriptos ++;
             socket.join(recorrido);
         }else{
             
