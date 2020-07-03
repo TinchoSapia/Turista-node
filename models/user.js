@@ -17,6 +17,10 @@ const UserSchema = Schema({
     recorridos: [{
         type: Schema.Types.ObjectId,
         ref: 'recorrido'
+    }],
+    recorridosFinalizados: [{
+        type: Schema.Types.ObjectId,
+        ref: 'recorridoInstancia'
     }]
 
 })
