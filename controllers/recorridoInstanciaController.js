@@ -126,6 +126,7 @@ async function terminarRecorridoInstancia(req, res){
     let recorridoId = req.params.recorridoId;
     let recorridoEncontrado = await RecorridoInstancia.findById(recorridoId);
     
+
     if (recorridoEncontrado.guiaId != userId) {
         res.status(403).send({message: `No tienes permiso para modificar este recorrido` });
         return;
@@ -137,10 +138,14 @@ async function terminarRecorridoInstancia(req, res){
           return;
         }
         recorrido.estado = "Finalizado";
+        
         recorrido.save(function(err) {
             if (err){
                return res.status(500).send({message: `Error al finalizar recorrido ${err}`});     
             } 
+            for(let i =0;i<recorrido.usuariosInscriptos.size();i++){
+                recorrido.usuariosInscriptos.get(i).recorridosFinalizados.add(recorrido)
+            }
             return res.status(200).send({message: `El recorrido ha sido finalizado`});
         })
     })

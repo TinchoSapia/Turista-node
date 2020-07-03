@@ -11,15 +11,9 @@ const recorridoInstanciaController = require('../controllers/recorridoInstanciaC
 
 //user controllers
 api.get('/users/',isAuth,  userController.getUsuarios);
-<<<<<<< HEAD
-api.get('/user/',isAuth, userController.getUsuario );
-api.put('/user/:userId',isAuth,  userController.updateUsuario);
-api.delete('/user/:userId',isAuth, userController.deleteUsuario);
-=======
 api.get('/user/', isAuth, userController.getUsuario );
 api.put('/user/',isAuth,  userController.updateUsuario);
 api.delete('/user/',isAuth, userController.deleteUsuario);
->>>>>>> 9afd8f27b29b889fd3cf43927e8b4125ced99fd2
 
 //recorrido base controllers
 api.get('/recorrido/', roleGuia,  recorridoController.getRecorridos);
