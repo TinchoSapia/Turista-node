@@ -103,7 +103,8 @@ async function unirseRecorridoInstancia(req, res){
             return res.status(403).send({message: `No se pudo realizar la inscripción`});
         }
         else{
-            return res.status(200).send({message: `Inscripción completada con éxito`});
+            return res.status(200).send({message: `Inscripción completada con éxito`,
+                                            recorrido: result});
         }
 
     })
