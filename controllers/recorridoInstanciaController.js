@@ -81,11 +81,11 @@ async function postRecorridoInstancia(req, res){
 
 //UNIRSE RECORRIDO (TURISTA)
 async function unirseRecorridoInstancia(req, res){
-   
+   console.log('1 // userId supuestamente: ', req.user);
     let userId = req.user;
     let recorridoInstanciaId = req.params.recorridoInstanciaId;
     let recorridoInstanciaEncontrado = await RecorridoInstancia.findById(recorridoInstanciaId);
-    console.log(recorridoInstanciaId);
+    console.log('2 // recorridoInstanciaID :',recorridoInstanciaId);
     if (recorridoInstanciaEncontrado.recorrido.maxParticipantes <= recorridoInstanciaEncontrado.usuariosInscriptos.length) {
     res.status(403).send({message: `El cupo del recorrido está lleno.` });
          return;
@@ -96,7 +96,7 @@ async function unirseRecorridoInstancia(req, res){
              return;
     }
     const nuevaListaUsuarios = [...recorridoInstanciaEncontrado.usuariosInscriptos, userId]
-    console.log(nuevaListaUsuarios);
+    console.log('3 // nuevaListaUsuarios :',nuevaListaUsuarios);
     recorridoInstancia.findByIdAndUpdate(recorridoInstanciaId,{"usuariosInscriptos": nuevaListaUsuarios}, function(err, result){
 
         if(err){
