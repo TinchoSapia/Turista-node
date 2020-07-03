@@ -32,7 +32,7 @@ mongoose.connect(process.env.DB, {useNewUrlParser:true, useUnifiedTopology:true}
         return console.log(chalk.red(`Error al intentar conectarse a la base de datos - ${err}`))
     }
     console.log(chalk.green('Base de datos conectada..'))
-
+   //process.env.PORT
     server.listen(process.env.PORT, () => {
         console.log(chalk.blue(`Corriendo en puerto: ${process.env.PORT}`))
     });
