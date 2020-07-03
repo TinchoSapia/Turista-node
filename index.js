@@ -115,7 +115,6 @@ io.on('connection', (socket) => {
     socket.on('cancelarRecorrido', (data)=>{
         io.to(data.key).emit('cancelarRecorrido');
         socket.leave(data.key);   
-        console.log('vieja lista: // ', recorridosPorEmpezarSocket)
         const nuevaLista =  recorridosPorEmpezarSocket.filter((recorrido) => {
            return recorrido.id != data.key;
         });
@@ -137,7 +136,6 @@ io.on('connection', (socket) => {
     
     //UN TURISTA SE UNE A UN RECORRIDO DE LA LISTA, Y ENVÍA AL GUÍA LA INFORMACIÓN DE QUE ALGUIEN SE UNIÓ
     socket.on('joinRecorrido', (recorrido) =>{
-        console.log('1// join recorridoId: ', recorrido)
         let i = 0;
         let isRecorridoEncontrado = false;
         while(i< recorridosPorEmpezarSocket.length && !isRecorridoEncontrado){
@@ -147,9 +145,7 @@ io.on('connection', (socket) => {
                i++;
            }
         }
-        console.log('2// listaRecorridos en Socket: ', recorridosPorEmpezarSocket)
         if(isRecorridoEncontrado){
-            console.log('3// Encontro el recorrido y se unio a la sala')
             recorridosPorEmpezarSocket[i].usuariosInscriptos ++;
             socket.join(recorrido);
         }
@@ -167,9 +163,11 @@ io.on('connection', (socket) => {
                i++;
            }
         }
-
+        console.log('1//recorridoId a abandonar: ', recorrido)
         if(isRecorridoEncontrado){
-            recorridosPorEmpezarSocket[i].usuariosInscriptos --;
+            console.log('3//recorrido encontrado, cant anterior:', recorridosPorEmpezarSocket[i].usuariosInscriptos)
+            recorridosPorEmpezarSocket[i].usuariosInscriptos = recorridosPorEmpezarSocket[i].usuariosInscriptos -1;
+            console.log('2//recorrido encontrado, cant nueva: ', recorridosPorEmpezarSocket[i].usuariosInscriptos)
             io.to(recorrido).emit('abandonoUsuario');
             socket.leave(recorrido);
         }
@@ -178,7 +176,6 @@ io.on('connection', (socket) => {
 
     //EL GUÍA ENVÍA LA INFORMACIÓN DEL RECORRIDO A SU SALA, CADA VEZ QUE HAYA UN CAMBIO EN EL RECORRIDO
     socket.on('shareRecorridoDataToRoom', (recorrido) =>{
-        console.log('5// recorridoId y room a enviar actualizacion: ', recorrido)
         let i = 0;
         let isRecorridoEncontrado = false;
         while(i< recorridosPorEmpezarSocket.length && !isRecorridoEncontrado){
@@ -190,7 +187,6 @@ io.on('connection', (socket) => {
         }
 
         if(isRecorridoEncontrado){
-            console.log('6// enviando nueva data: ', recorridosPorEmpezarSocket[i])
             io.to(recorrido).emit('recorridoData', (recorridosPorEmpezarSocket[i]));
         }
 
