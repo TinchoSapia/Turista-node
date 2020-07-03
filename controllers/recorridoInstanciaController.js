@@ -1,6 +1,7 @@
 const RecorridoInstancia = require('../models/recorridoInstancia')
 const User = require('../models/user')
 const chalk= require('chalk')
+const userController = require('./userController')
 
 //OBTENER RECORRIDO PUBLICO
 function getRecorridoInstancia(req, res){
@@ -18,8 +19,33 @@ function getRecorridoInstancia(req, res){
         return res.status(200).send({recorrido});
     } )
 }
+async function getRecorridosInstancia(req, res){
+    let userId = req.user;
+    const user = await User.findById(userId);
+    let recorridos = [];
+    console.log(user.recorridosFinalizados[0]);
+    if(user.recorridosFinalizados.length!==0){
+        for(let i = 0; i<user.recorridosFinalizados.length;i++){    
+            RecorridoInstancia.findById(user.recorridosFinalizados[i] , (err, recorridoInstancia) =>{
+            if(!recorridoInstancia) {
+                res.status(404).send({message: `No hay recorridos creados`});
+                return;
+            }
+            if(err) {
+                res.status(500).send({message: `Error al buscar recorridos ${err}`});
+                return
+            } 
+            recorridos.push(recorridoInstancia)
+            return res.status(200).send({recorridos})
+            }   
+        )}
+        
+    }else{
+        res.status(404).send({message: `No hay recorridos creados`});
+        return;
+    }
 
-
+}
 
 //PUBLICAR RECORRIDO (GUIA)
 async function postRecorridoInstancia(req, res){
@@ -136,6 +162,7 @@ async function terminarRecorridoInstancia(req, res){
     let recorridoId = req.params.recorridoId;
     let recorridoEncontrado = await RecorridoInstancia.findById(recorridoId);
     
+
     if (recorridoEncontrado.guiaId != userId) {
         res.status(403).send({message: `No tienes permiso para modificar este recorrido` });
         return;
@@ -147,10 +174,14 @@ async function terminarRecorridoInstancia(req, res){
           return;
         }
         recorrido.estado = "Finalizado";
+        
         recorrido.save(function(err) {
             if (err){
                return res.status(500).send({message: `Error al finalizar recorrido ${err}`});     
             } 
+            for(let i =0;i<recorrido.usuariosInscriptos.size();i++){
+                recorrido.usuariosInscriptos.get(i).recorridosFinalizados.add(recorrido)
+            }
             return res.status(200).send({message: `El recorrido ha sido finalizado`});
         })
     })
@@ -190,5 +221,6 @@ module.exports ={
     cancelarRecorridoInstancia,
     terminarRecorridoInstancia,
     iniciarRecorridoInstancia,
+    getRecorridosInstancia
     
 }

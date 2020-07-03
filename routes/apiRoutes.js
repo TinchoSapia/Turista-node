@@ -24,6 +24,7 @@ api.delete('/recorrido/:recorridoId', roleGuia,  recorridoController.deleteRecor
 
 //recorrido instancia controllers
 api.get('/recorridoInstancia/:recorridoInstanciaId', isAuth,  recorridoInstanciaController.getRecorridoInstancia);
+api.get('/recorridosInstancia/', isAuth,  recorridoInstanciaController.getRecorridosInstancia)
 api.post('/recorridoInstancia/', roleGuia,  recorridoInstanciaController.postRecorridoInstancia);
 api.put('/recorridoInstancia/unirse/:recorridoId', roleTurista,  recorridoInstanciaController.unirseRecorridoInstancia);
 api.put('/recorridoInstancia/abandonar/:recorridoId', roleTurista,  recorridoInstanciaController.abandonarRecorridoInstancia);
