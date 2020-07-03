@@ -171,8 +171,9 @@ io.on('connection', (socket) => {
         if(isRecorridoEncontrado){
             recorridosPorEmpezarSocket[i].usuariosInscriptos --;
             io.to(recorrido).emit('abandonoUsuario');
+            socket.leave(recorrido);
         }
-        socket.leave(recorrido);  
+         
     });
 
     //EL GUÍA ENVÍA LA INFORMACIÓN DEL RECORRIDO A SU SALA, CADA VEZ QUE HAYA UN CAMBIO EN EL RECORRIDO
