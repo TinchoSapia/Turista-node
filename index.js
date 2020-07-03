@@ -146,10 +146,11 @@ io.on('connection', (socket) => {
            }
         }
         if(isRecorridoEncontrado){
-            recorridosPorEmpezarSocket[i].usuariosInscriptos ++;
+            recorridosPorEmpezarSocket[i].usuariosInscriptos = recorridosPorEmpezarSocket[i].usuariosInscriptos +1;
             socket.join(recorrido);
+            io.to(recorrido).emit('inscripciónUsuario', recorridosPorEmpezarSocket[i].usuariosInscriptos);
         }
-        io.to(recorrido).emit('inscripciónUsuario');
+        
     });
 
     //UN TURISTA ABANDONA UN RECORRIDO DE LA LISTA, Y ENVÍA AL GUÍA LA INFORMACIÓN DE QUE ALGUIEN ABANDONO EL RECORRIDO, LUEGO ABANDONA LA SALA
@@ -168,7 +169,7 @@ io.on('connection', (socket) => {
             console.log('3//recorrido encontrado, cant anterior:', recorridosPorEmpezarSocket[i].usuariosInscriptos)
             recorridosPorEmpezarSocket[i].usuariosInscriptos = recorridosPorEmpezarSocket[i].usuariosInscriptos -1;
             console.log('2//recorrido encontrado, cant nueva: ', recorridosPorEmpezarSocket[i].usuariosInscriptos)
-            io.to(recorrido).emit('abandonoUsuario');
+            io.to(recorrido).emit('abandonoUsuario', recorridosPorEmpezarSocket[i].usuariosInscriptos);
             socket.leave(recorrido);
         }
          
