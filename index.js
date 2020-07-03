@@ -63,8 +63,11 @@ io.on('connection', (socket) => {
         }
         return isRecorridoEncontrado;
     })*/
+
+    //AL UNIRSE UNA PERSONA AL SOCKET, SE LE ENVÍA LA INFORMACION DE TODOS LOS RECORRIDOS ACTIVOS
     socket.emit('guidesData', recorridosPorEmpezarSocket);
 
+    //EL GUÍA ENVÍA A TODOS LOS USUARIOS DEL SOCKET, SU UBICACION, Y LA ACTUALIZA EN LA LISTA DEL SOCKET
     socket.on('shareGuideLocation', (data) => {
         recorridosPorEmpezarSocket = recorridosPorEmpezarSocket.map((recorrido)=>{
             if(recorrido.id == data.key){
@@ -75,8 +78,10 @@ io.on('connection', (socket) => {
         socket.broadcast.emit('guideData', data); //Crear en front un socket.on('guideData', (data)=> etc.) que recibe los datos del guia
     });
 
+    //EL GUÍA ENVÍA AL SOCKET LA INFORMACIÓN DE SU RECORRIDO ACTIVADO, JUNTO CON SU UBICACION Y ENVÍA SU UBICACIÓN A TODOS LOS USUARIOS
     socket.on('shareRecorridoActivo', (data) =>{
         const recorrido = {
+            usuariosInscriptos: data.usuariosInscriptos,
             locationActual: data.coordinates,
             recorrido: data.recorrido,
             id: data.key,
@@ -105,18 +110,21 @@ io.on('connection', (socket) => {
         socket.broadcast.emit('guideData', location)
     });
 
+    //EL GUÍA CANCELA EL RECORRIDO, Y ENVÍA A TODOS LOS USUARIOS UNIDOS AL RECORRIDO EL MENSAJE DE CANCELACIÓN, LUEGO QUITA SU RECORRIDO DE LA LISTA
+    //Y ENVÍA NUEVAMENTE LA LISTA A LOS USUARIOS SIN SU RECORRIDO
     socket.on('cancelarRecorrido', (data)=>{
+        io.to(data.key).emit('cancelarRecorrido');
         socket.leave(data.key);   
-        console.log('vieja lista: // ', recorridosPorEmpezarSocket)
         const nuevaLista =  recorridosPorEmpezarSocket.filter((recorrido) => {
            return recorrido.id != data.key;
         });
         recorridosPorEmpezarSocket = nuevaLista;
-        console.log('nueva lista: // ',nuevaLista);
         
         io.sockets.emit('guidesData', recorridosPorEmpezarSocket);
+        
     })
 
+    //EL RECORRIDO INICIA Y ES RETIRADO DE LA LISTA DE RECORRIDOS POR EMPEZAR, FALTA AGREGAR LA ACTUALIZACION DE LA LISTA A LOS USUARIOS
     socket.on('iniciarRecorrido', (data)=>{
         const recorridoEncontrado = recorridosPorEmpezarSocket.find(recorrido => recorrido.id == data.key); 
         recorridosEnCursoSocket.push(recorridoEncontrado);
@@ -126,9 +134,64 @@ io.on('connection', (socket) => {
          recorridosPorEmpezarSocket = nuevaLista;
     })
     
+    //UN TURISTA SE UNE A UN RECORRIDO DE LA LISTA, Y ENVÍA AL GUÍA LA INFORMACIÓN DE QUE ALGUIEN SE UNIÓ
     socket.on('joinRecorrido', (recorrido) =>{
-        socket.join(recorrido);  
+        let i = 0;
+        let isRecorridoEncontrado = false;
+        while(i< recorridosPorEmpezarSocket.length && !isRecorridoEncontrado){
+           if(recorridosPorEmpezarSocket[i].id == recorrido){
+               isRecorridoEncontrado = true;
+           }else{
+               i++;
+           }
+        }
+        if(isRecorridoEncontrado){
+            recorridosPorEmpezarSocket[i].usuariosInscriptos = recorridosPorEmpezarSocket[i].usuariosInscriptos +1;
+            socket.join(recorrido);
+            io.to(recorrido).emit('inscripciónUsuario', recorridosPorEmpezarSocket[i].usuariosInscriptos);
+        }
+        
     });
+
+    //UN TURISTA ABANDONA UN RECORRIDO DE LA LISTA, Y ENVÍA AL GUÍA LA INFORMACIÓN DE QUE ALGUIEN ABANDONO EL RECORRIDO, LUEGO ABANDONA LA SALA
+    socket.on('leaveRecorrido', (recorrido) =>{
+        let i = 0;
+        let isRecorridoEncontrado = false;
+        while(i< recorridosPorEmpezarSocket.length && !isRecorridoEncontrado){
+           if(recorridosPorEmpezarSocket[i].id == recorrido){
+               isRecorridoEncontrado = true;
+           }else{
+               i++;
+           }
+        }
+        console.log('1//recorridoId a abandonar: ', recorrido)
+        if(isRecorridoEncontrado){
+            console.log('3//recorrido encontrado, cant anterior:', recorridosPorEmpezarSocket[i].usuariosInscriptos)
+            recorridosPorEmpezarSocket[i].usuariosInscriptos = recorridosPorEmpezarSocket[i].usuariosInscriptos -1;
+            console.log('2//recorrido encontrado, cant nueva: ', recorridosPorEmpezarSocket[i].usuariosInscriptos)
+            io.to(recorrido).emit('abandonoUsuario', recorridosPorEmpezarSocket[i].usuariosInscriptos);
+            socket.leave(recorrido);
+        }
+         
+    });
+
+    //EL GUÍA ENVÍA LA INFORMACIÓN DEL RECORRIDO A SU SALA, CADA VEZ QUE HAYA UN CAMBIO EN EL RECORRIDO
+    socket.on('shareRecorridoDataToRoom', (recorrido) =>{
+        let i = 0;
+        let isRecorridoEncontrado = false;
+        while(i< recorridosPorEmpezarSocket.length && !isRecorridoEncontrado){
+           if(recorridosPorEmpezarSocket[i].id == recorrido){
+               isRecorridoEncontrado = true;
+           }else{
+               i++;
+           }
+        }
+
+        if(isRecorridoEncontrado){
+            io.to(recorrido).emit('recorridoData', (recorridosPorEmpezarSocket[i]));
+        }
+
+    })
     
     socket.on('disconnect', () => {
       console.log('user disconnected');
