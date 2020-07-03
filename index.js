@@ -141,7 +141,7 @@ io.on('connection', (socket) => {
         let i = 0;
         let isRecorridoEncontrado = false;
         while(i< recorridosPorEmpezarSocket.length && !isRecorridoEncontrado){
-           if(recorridosPorEmpezarSocket[i].key == recorrido){
+           if(recorridosPorEmpezarSocket[i].id == recorrido){
                isRecorridoEncontrado = true;
            }else{
                i++;
@@ -161,7 +161,7 @@ io.on('connection', (socket) => {
         let i = 0;
         let isRecorridoEncontrado = false;
         while(i< recorridosPorEmpezarSocket.length && !isRecorridoEncontrado){
-           if(recorridosPorEmpezarSocket[i].key == recorrido){
+           if(recorridosPorEmpezarSocket[i].id == recorrido){
                isRecorridoEncontrado = true;
            }else{
                i++;
@@ -181,7 +181,7 @@ io.on('connection', (socket) => {
         let i = 0;
         let isRecorridoEncontrado = false;
         while(i< recorridosPorEmpezarSocket.length && !isRecorridoEncontrado){
-           if(recorridosPorEmpezarSocket[i].key == recorrido){
+           if(recorridosPorEmpezarSocket[i].id == recorrido){
                isRecorridoEncontrado = true;
            }else{
                i++;
