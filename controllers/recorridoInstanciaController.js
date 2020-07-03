@@ -6,7 +6,7 @@ const chalk= require('chalk')
 function getRecorridoInstancia(req, res){
     let recorridoInstanciaId = req.params.recorridoInstanciaId; // de la url, recordar agregar al path
     RecorridoInstancia.findById(recorridoInstanciaId, (err, recorrido) =>{
-        if(!recorridos){ 
+        if(!recorrido){ 
              res.status(404).send({message: `No existe el recorrido`});
              return;
         }
@@ -19,22 +19,32 @@ function getRecorridoInstancia(req, res){
     } )
 }
 
+
+
 //PUBLICAR RECORRIDO (GUIA)
 async function postRecorridoInstancia(req, res){
 
     let userId = req.user;
     const user = await User.findById(userId);
-    
+    console.log(req.body.recorrido.recorrido);
     let recorridoInstancia = new RecorridoInstancia({
         guiaId : userId,
-        recorrido: req.body.recorrido,
+        recorrido: {
+            nombre: req.body.recorrido.nombre,
+            puntoInicio: req.body.recorrido.puntoInicio,
+            recorrido: req.body.recorrido.recorrido,
+            maxParticipantes: req.body.recorrido.maxParticipantes,
+            duracionMinutos: req.body.recorrido.duracionMinutos,
+            idioma: req.body.recorrido.idioma,
+          },
         estado: 'Por empezar',
         horarioComienzo: req.body.horarioComienzo,
     });
     
     await recorridoInstancia.save(async (err, recorridoInstanciado) => {
         if(err){
-             res.status(500).send({message: `Error al salvar en la base de datos: ${err}`});
+             res.status(500).send({message: `Error al salvar en la base de datos: ${err}`,
+                                  recorrido: req.body.recorrido});
              return;
         }
 
@@ -151,11 +161,39 @@ async function terminarRecorridoInstancia(req, res){
     })
 }
 
+//ESTADO EN CURSO RECORRIDO (GUIA)
+async function iniciarRecorridoInstancia(req, res){
+    let userId = req.user;
+    let recorridoId = req.params.recorridoId;
+    let recorridoEncontrado = await RecorridoInstancia.findById(recorridoId);
+    
+    if (recorridoEncontrado.guiaId != userId) {
+        res.status(403).send({message: `No tienes permiso para modificar este recorrido` });
+        return;
+    }
+
+    RecorridoInstancia.findById(recorridoId, (err, recorrido)=>{
+        if(err) {
+          res.status(500).send({message: `Error al encontrar recorrido ${err}`});
+          return;
+        }
+        recorrido.estado = "En curso";
+        recorrido.save(function(err) {
+            if (err){
+               return res.status(500).send({message: `Error al iniciar recorrido ${err}`});     
+            } 
+            return res.status(200).send({message: `El recorrido ha iniciado`});
+        })
+    })
+}
+
 module.exports ={
     getRecorridoInstancia,
     postRecorridoInstancia,
     unirseRecorridoInstancia,
     abandonarRecorridoInstancia,
     cancelarRecorridoInstancia,
-    terminarRecorridoInstancia
+    terminarRecorridoInstancia,
+    iniciarRecorridoInstancia,
+    
 }
