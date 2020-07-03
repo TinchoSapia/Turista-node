@@ -112,7 +112,6 @@ io.on('connection', (socket) => {
            return recorrido.id != data.key;
         });
         recorridosPorEmpezarSocket = nuevaLista;
-        console.log('nueva lista: // ',nuevaLista);
         
         io.sockets.emit('guidesData', recorridosPorEmpezarSocket);
     })
@@ -127,7 +126,25 @@ io.on('connection', (socket) => {
     })
     
     socket.on('joinRecorrido', (recorrido) =>{
-        socket.join(recorrido);  
+        let i = 0;
+        let isRecorridoEncontrado = false;
+        while(i< recorridosPorEmpezarSocket.length && !isRecorridoEncontrado){
+           if(recorridosPorEmpezarSocket[i].key == recorrido){
+               isRecorridoEncontrado = true;
+           }else{
+               i++;
+           }
+        }
+
+        if(isRecorridoEncontrado){
+            recorridosPorEmpezarSocket[i]. = data.coordinates;
+            socket.join(recorrido);
+        }else{
+            
+        }
+    });
+    socket.on('leaveRecorrido', (recorrido) =>{
+        socket.leave(recorrido);  
     });
     
     socket.on('disconnect', () => {
