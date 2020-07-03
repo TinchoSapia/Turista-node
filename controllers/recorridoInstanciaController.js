@@ -83,7 +83,7 @@ async function postRecorridoInstancia(req, res){
 async function unirseRecorridoInstancia(req, res){
    console.log('1 // userId supuestamente: ', req.user);
     let userId = req.user;
-    let recorridoInstanciaId = req.params.recorridoInstanciaId;
+    let recorridoInstanciaId = req.params.recorridoId;
     let recorridoInstanciaEncontrado = await RecorridoInstancia.findById(recorridoInstanciaId);
     console.log('2 // recorridoInstanciaID :',recorridoInstanciaId);
     if (recorridoInstanciaEncontrado.recorrido.maxParticipantes <= recorridoInstanciaEncontrado.usuariosInscriptos.length) {
@@ -114,7 +114,7 @@ async function unirseRecorridoInstancia(req, res){
 async function abandonarRecorridoInstancia(req, res){
    
     let userId = req.user;
-    let recorridoInstanciaId = req.params.recorridoInstanciaId;
+    let recorridoInstanciaId = req.params.recorridoId;
     let recorridoInstanciaEncontrado = await RecorridoInstancia.findById(recorridoInstanciaId);
     
     if (!recorridoInstanciaEncontrado.usuariosInscriptos.includes(userId)) {
