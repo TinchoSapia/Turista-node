@@ -85,7 +85,7 @@ async function unirseRecorridoInstancia(req, res){
     let userId = req.user;
     let recorridoInstanciaId = req.params.recorridoInstanciaId;
     let recorridoInstanciaEncontrado = await RecorridoInstancia.findById(recorridoInstanciaId);
-    
+    console.log(recorridoInstanciaId);
     if (recorridoInstanciaEncontrado.recorrido.maxParticipantes <= recorridoInstanciaEncontrado.usuariosInscriptos.length) {
     res.status(403).send({message: `El cupo del recorrido está lleno.` });
          return;
@@ -95,15 +95,18 @@ async function unirseRecorridoInstancia(req, res){
         res.status(403).send({message: `Recorrido en curso, o finalizado.` });
              return;
     }
+    const nuevaListaUsuarios = [...recorridoInstanciaEncontrado.usuariosInscriptos, userId]
+    console.log(nuevaListaUsuarios);
+    recorridoInstancia.findByIdAndUpdate(recorridoInstanciaId,{"usuariosInscriptos": nuevaListaUsuarios}, function(err, result){
 
-    await recorridoInstanciaEncontrado.usuariosInscriptos.push(userId);
-    await recorridoInstanciaEncontrado.save();
+        if(err){
+            return res.status(403).send({message: `No se pudo realizar la inscripción`});
+        }
+        else{
+            return res.status(200).send({message: `Inscripción completada con éxito`});
+        }
 
-    if (recorridoInstanciaEncontrado.usuariosInscriptos.includes(userId)){
-        return res.status(200).send({message: `Inscripción completada con éxito`});
-    } else {
-        return res.status(403).send({message: `No se pudo realizar la inscripción`});
-    }
+    })
 
 }
 
@@ -119,14 +122,16 @@ async function abandonarRecorridoInstancia(req, res){
          return;
     }
 
-    recorridoInstanciaEncontrado = await recorridoInstanciaEncontrado.usuariosInscriptos.filter(id => id !== userId);
-    await recorridoInstanciaEncontrado.save();
+    const nuevaListaUsuarios = recorridoInstanciaEncontrado.usuariosInscriptos.filter(id => id !== userId);
+    recorridoInstancia.findByIdAndUpdate(recorridoInstanciaId,{"usuariosInscriptos": nuevaListaUsuarios}, function(err, result){
+        if(err){
+            return res.status(403).send({message: `No se pudo anular la inscripción`});
+        }
+        else{
+            return res.status(200).send({message: `Inscripción anulada con éxito`});
+        }
 
-    if (!recorridoInstanciaEncontrado.usuariosInscriptos.includes(userId)){
-        return res.status(200).send({message: `Inscripción anulada con éxito`});
-    } else {
-        return res.status(403).send({message: `No se pudo anular la inscripción`});
-    }
+    })
 
 }
 
