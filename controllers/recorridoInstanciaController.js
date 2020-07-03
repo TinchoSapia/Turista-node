@@ -97,7 +97,7 @@ async function unirseRecorridoInstancia(req, res){
     }
     const nuevaListaUsuarios = [...recorridoInstanciaEncontrado.usuariosInscriptos, userId]
     console.log('3 // nuevaListaUsuarios :',nuevaListaUsuarios);
-    recorridoInstancia.findByIdAndUpdate(recorridoInstanciaId,{"usuariosInscriptos": nuevaListaUsuarios}, function(err, result){
+    RecorridoInstancia.findByIdAndUpdate(recorridoInstanciaId,{"usuariosInscriptos": nuevaListaUsuarios}, function(err, result){
 
         if(err){
             return res.status(403).send({message: `No se pudo realizar la inscripción`});
@@ -123,7 +123,7 @@ async function abandonarRecorridoInstancia(req, res){
     }
 
     const nuevaListaUsuarios = recorridoInstanciaEncontrado.usuariosInscriptos.filter(id => id !== userId);
-    recorridoInstancia.findByIdAndUpdate(recorridoInstanciaId,{"usuariosInscriptos": nuevaListaUsuarios}, function(err, result){
+    RecorridoInstancia.findByIdAndUpdate(recorridoInstanciaId,{"usuariosInscriptos": nuevaListaUsuarios}, function(err, result){
         if(err){
             return res.status(403).send({message: `No se pudo anular la inscripción`});
         }
