@@ -215,7 +215,6 @@ io.on('connection', (socket) => {
             const recorridoEncontrado = recorridosEnCursoSocket[i];
             
             console.log('//RECORRIDO ENCONTRADO// ', recorridoEncontrado); 
-            console.log('//RECORRIDO ENCONTRADO [1]// ', recorridoEncontrado[1]);
             console.log('//RECORRIDO ENCONTRADO .locationTuristas// ', recorridoEncontrado.locationTuristas);
             if(isRecorridoEncontrado){
                 
