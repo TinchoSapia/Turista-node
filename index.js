@@ -212,6 +212,7 @@ io.on('connection', (socket) => {
                 recorridosEnCursoSocket[i].locationActualTuristas = [];
             }
             socket.join(location.key);
+            console.log('2//envio ubicacion guia a grupo')
             io.to(location.key).emit('guiaLocation', location)
         }
         
@@ -234,11 +235,21 @@ io.on('connection', (socket) => {
                 recorridosEnCursoSocket[i].locationActualTuristas = [...recorridosEnCursoSocket[i].locationActualTuristas,location];
             }
             socket.join(location.key);
+            console.log('2.b//envio ubicacion turista a grupo')
             io.to(location.key).emit('locationTurista', location)
         }
     })
 
     socket.on('updateLocationsTuristas', (locations)=>{
+        while(i< recorridosEnCursoSocket.length && !isRecorridoEncontrado){
+            if(recorridosEnCursoSocket[i].id == location.key){
+                isRecorridoEncontrado = true;
+            }else{
+                i++;
+            }
+         }
+        console.log('4// envio updates a todos los turistas y la mia propia')
+        io.to(locations.key).emit('guiaLocation', recorridosEnCursoSocket[i].locationActual)
         io.to(locations.key).emit('locationsTuristas', locations);
     })
 

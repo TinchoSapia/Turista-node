@@ -33,7 +33,6 @@ async function getRecorridosInstancia(req, res){
             })
             if (user.recorridosFinalizados.length == recorridos.length){
                 return res.status(200).send({recorridos});
-                
             }
         }
         
