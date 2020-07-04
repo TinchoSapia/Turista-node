@@ -206,7 +206,7 @@ io.on('connection', (socket) => {
             let isRecorridoEncontrado = false;
             console.log('//LISTA DE RECORRIDOS EN CURSO// ',recorridosEnCursoSocket)
             while(i< recorridosEnCursoSocket.length && !isRecorridoEncontrado){
-               if(recorridosEnCursoSocket[i].id == location.key){
+               if(recorridosEnCursoSocket[i][0].id == location.key){
                    isRecorridoEncontrado = true;
                }else{
                    i++;
@@ -215,12 +215,15 @@ io.on('connection', (socket) => {
             if(isRecorridoEncontrado){
                 
                 console.log('//GUIA GUARDO EN EL SOCKET SU LOCATION//', location)
-                recorridosEnCursoSocket[i].locationActual = location;
+                recorridosEnCursoSocket[i][0].locationActual = location;
             }
-            for (let num = 0; num < recorridosEnCursoSocket[i].locationTuristas.length; i++){
-                console.log('//SE LE ENVIAN AL GUIA TODAS LAS LOCATION DE TURISTAS GUARDADAS EN EL SOCKET', num)
-                io.to(location.key).emit('turistaLocation', recorridosEnCursoSocket[i].locationTuristas[num] )
+            if(recorridosEnCursoSocket[i].locationTuristas){
+                for (let num = 0; num < recorridosEnCursoSocket[i].locationTuristas.length; i++){
+                    console.log('//SE LE ENVIAN AL GUIA TODAS LAS LOCATION DE TURISTAS GUARDADAS EN EL SOCKET', num)
+                    io.to(location.key).emit('turistaLocation', recorridosEnCursoSocket[i].locationTuristas[num] )
+                }
             }
+            
             console.log('//GUIA MANDA UBICACION AL ROOM//')
             io.to(location.key).emit('guiaLocation', location)
         
@@ -234,7 +237,7 @@ io.on('connection', (socket) => {
             let isRecorridoEncontrado = false;
             console.log('//LISTA DE RECORRIDOS EN CURSO// ',recorridosEnCursoSocket)
             while(i< recorridosEnCursoSocket.length && !isRecorridoEncontrado){
-               if(recorridosEnCursoSocket[i].id == location.key){
+               if(recorridosEnCursoSocket[i][0].id == location.key){
                    isRecorridoEncontrado = true;
                }else{
                    i++;
@@ -262,7 +265,7 @@ io.on('connection', (socket) => {
         let i = 0;
         let isRecorridoEncontrado = false;
         while(i< recorridosEnCursoSocket.length && !isRecorridoEncontrado){
-            if(recorridosEnCursoSocket[i].id == location.key){
+            if(recorridosEnCursoSocket[i][0].id == location.key){
                 isRecorridoEncontrado = true;
             }else{
                 i++;
