@@ -24,21 +24,18 @@ async function getRecorridosInstancia(req, res){
     const user = await User.findById(userId);
     let recorridos = [];
     console.log(user.recorridosFinalizados[0]);
-    if(user.recorridosFinalizados.length!==0){
+    if(user.recorridosFinalizados.length > 0){
         for(let i = 0; i<user.recorridosFinalizados.length;i++){    
-            RecorridoInstancia.findById(user.recorridosFinalizados[i] , (err, recorridoInstancia) =>{
-            if(!recorridoInstancia) {
-                res.status(404).send({message: `No hay recorridos creados`});
-                return;
+             await RecorridoInstancia.findById(user.recorridosFinalizados[i] , (err, recorridoInstancia) =>{
+                if (!err){
+                    recorridos.push(recorridoInstancia);
+                }
+            })
+            if (user.recorridosFinalizados.length == recorridos.length){
+                return res.status(200).send({recorridos});
+                
             }
-            if(err) {
-                res.status(500).send({message: `Error al buscar recorridos ${err}`});
-                return
-            } 
-            recorridos.push(recorridoInstancia)
-            return res.status(200).send({recorridos})
-            }   
-        )}
+        }
         
     }else{
         res.status(404).send({message: `No hay recorridos creados`});

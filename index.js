@@ -33,8 +33,8 @@ mongoose.connect(process.env.DB, {useNewUrlParser:true, useUnifiedTopology:true}
     }
     console.log(chalk.green('Base de datos conectada..'))
    //process.env.PORT
-    server.listen(process.env.PORT, () => {
-        console.log(chalk.blue(`Corriendo en puerto: ${process.env.PORT}`))
+    server.listen(process.env.PORT || process.env.ALT_PORT, () => {
+        console.log(chalk.blue(`Corriendo en puerto: ${process.env.ALT_PORT}`))
     });
 });
 //io listener
