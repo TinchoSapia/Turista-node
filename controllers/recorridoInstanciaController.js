@@ -181,7 +181,7 @@ async function terminarRecorridoInstancia(req, res){
             if (err){
                return res.status(500).send({message: `Error al finalizar recorrido ${err}`});     
             } 
-            for(let i =0;i<recorrido.usuariosInscriptos.size();i++){
+            for(let i =0;i<recorrido.usuariosInscriptos.length;i++){
                 recorrido.usuariosInscriptos.get(i).recorridosFinalizados.add(recorrido)
             }
             return res.status(200).send({message: `El recorrido ha sido finalizado`});
