@@ -132,6 +132,8 @@ io.on('connection', (socket) => {
             return recorrido.id != data.key;
          });
          recorridosPorEmpezarSocket = nuevaLista;
+         io.sockets.emit('guidesData', recorridosPorEmpezarSocket);
+         io.to(data.key).emit('iniciarRecorrido');
     })
     
     //UN TURISTA SE UNE A UN RECORRIDO DE LA LISTA, Y ENVÍA AL GUÍA LA INFORMACIÓN DE QUE ALGUIEN SE UNIÓ
@@ -190,9 +192,56 @@ io.on('connection', (socket) => {
         if(isRecorridoEncontrado){
             io.to(recorrido).emit('recorridoData', (recorridosPorEmpezarSocket[i]));
         }
-
     })
     
+    socket.on('shareGuideLocationGrupo', (location)=>{
+        
+        let i = 0;
+        let isRecorridoEncontrado = false;
+        while(i< recorridosEnCursoSocket.length && !isRecorridoEncontrado){
+           if(recorridosEnCursoSocket[i].id == location.key){
+               isRecorridoEncontrado = true;
+           }else{
+               i++;
+           }
+        }
+
+        if(isRecorridoEncontrado){
+            recorridosEnCursoSocket[i].locationActual = location.coordinates;
+            if(!recorridosEnCursoSocket[i].locationActualTuristas){
+                recorridosEnCursoSocket[i].locationActualTuristas = [];
+            }
+            socket.join(location.key);
+            io.to(location.key).emit('guiaLocation', location)
+        }
+        
+    })
+    socket.on('shareTuristaLocationGrupo', (location)=>{
+        let i = 0;
+        let isRecorridoEncontrado = false;
+        while(i< recorridosEnCursoSocket.length && !isRecorridoEncontrado){
+           if(recorridosEnCursoSocket[i].id == location.key){
+               isRecorridoEncontrado = true;
+           }else{
+               i++;
+           }
+        }
+
+        if(isRecorridoEncontrado){
+            if(recorridosEnCursoSocket[i].locationActualTuristas.length < 1 || !recorridosEnCursoSocket[i].locationActualTuristas){
+                recorridosEnCursoSocket[i].locationActualTuristas = [location];
+            }else{
+                recorridosEnCursoSocket[i].locationActualTuristas = [...recorridosEnCursoSocket[i].locationActualTuristas,location];
+            }
+            socket.join(location.key);
+            io.to(location.key).emit('locationTurista', location)
+        }
+    })
+
+    socket.on('updateLocationsTuristas', (locations)=>{
+        io.to(locations.key).emit('locationsTuristas', locations);
+    })
+
     socket.on('disconnect', () => {
       console.log('user disconnected');
     });
