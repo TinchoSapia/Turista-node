@@ -225,8 +225,8 @@ io.on('connection', (socket) => {
             if (typeof recorridoEncontrado.locationTuristas !== 'undefined' && recorridoEncontrado.locationTuristas.length > 0) {
                 // the array is defined and has at least one element
                 for (let num = 0; num < recorridoEncontrado.locationTuristas.length; i++){
-                    console.log('//SE LE ENVIAN AL GUIA TODAS LAS LOCATION DE TURISTAS GUARDADAS EN EL SOCKET', num, recorridoEncontrado[1][num])
-                    io.to(location.key).emit('turistaLocation', recorridoEncontrado[1][num] )
+                    console.log('//SE LE ENVIAN AL GUIA TODAS LAS LOCATION DE TURISTAS GUARDADAS EN EL SOCKET', recorridoEncontrado.locationTuristas[num])
+                    io.to(location.key).emit('turistaLocation', recorridoEncontrado.locationTuristas[num] )
                 }
             }
             
