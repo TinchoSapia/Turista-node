@@ -129,7 +129,8 @@ io.on('connection', (socket) => {
         const recorridoEncontrado = recorridosPorEmpezarSocket.filter((recorrido) => {
             return recorrido.id == data.key;
         });
-         console.log('ESTA FUNCIONANDO?', recorridoEncontrado)              
+         console.log('ESTA FUNCIONANDO?', recorridoEncontrado)    
+         recorridoEncontrado.locationTuristas = [];          
         recorridosEnCursoSocket.push(recorridoEncontrado);
 
         const nuevaLista =  recorridosPorEmpezarSocket.filter((recorrido) => {
@@ -199,17 +200,58 @@ io.on('connection', (socket) => {
     })
     
     socket.on('shareGuideLocationGrupo', (location)=>{
-        
+            console.log('//ENTRO GUIA AL SOCKET//', location)
             socket.join(location.key);
-            console.log('2//envio ubicacion guia a grupo')
+            let i = 0;
+            let isRecorridoEncontrado = false;
+            while(i< recorridosEnCursoSocket.length && !isRecorridoEncontrado){
+               if(recorridosEnCursoSocket[i].id == location.key){
+                   isRecorridoEncontrado = true;
+               }else{
+                   i++;
+               }
+            }
+            if(isRecorridoEncontrado){
+                
+                console.log('//GUIA GUARDO EN EL SOCKET SU LOCATION//', location)
+                recorridosEnCursoSocket[i].locationActual = location;
+            }
+            for (let num = 0; num < recorridosEnCursoSocket[i].locationTuristas.length; i++){
+                console.log('//SE LE ENVIAN AL GUIA TODAS LAS LOCATION DE TURISTAS GUARDADAS EN EL SOCKET', num)
+                io.to(location.key).emit('turistaLocation', recorridosEnCursoSocket[i].locationTuristas[num] )
+            }
+            console.log('//GUIA MANDA UBICACION AL ROOM//')
             io.to(location.key).emit('guiaLocation', location)
         
         
     })
     socket.on('shareTuristaLocationGrupo', (location)=>{
-       
+            
+            console.log('//ENTRO TURISTA AL SOCKET//', location)
             socket.join(location.key);
-            console.log('2.b//envio ubicacion turista a grupo key:', location.key)
+            let i = 0;
+            let isRecorridoEncontrado = false;
+            while(i< recorridosEnCursoSocket.length && !isRecorridoEncontrado){
+               if(recorridosEnCursoSocket[i].id == location.key){
+                   isRecorridoEncontrado = true;
+               }else{
+                   i++;
+               }
+            }
+            if(isRecorridoEncontrado){
+                
+                console.log('//TURISTA GUARDA EN EL SOCKET SU UBICACION//')
+                if(recorridosEnCursoSocket[i].locationTuristas.length > 0){
+                    recorridosEnCursoSocket[i].locationTuristas = recorridosEnCursoSocket[i].locationTuristas.filter((tempLocation)=>{
+                        return tempLocation.nombre != location.nombre;
+                    })
+                    recorridosEnCursoSocket[i].locationTuristas.push(location);
+                }else{
+                    recorridosEnCursoSocket[i].locationTuristas.push(location);
+                }
+            }
+            
+            console.log('//TURISTA ENVIA SU UBICACION AL ROOM//')
             io.to(location.key).emit('locationTurista', location)
         
     })
@@ -225,12 +267,18 @@ io.on('connection', (socket) => {
             }
          }
          if(isRecorridoEncontrado){
-            console.log('4// envio updates a todos los turistas y la mia propia')
+            
+            console.log('//GUIA ENVIA SU UBICACION AL GRUPO DE NUEVO DESDE UPDATE LOCATIONS//', location)
             io.to(locations.key).emit('guiaLocation', recorridosEnCursoSocket[i].locationActual)
            
          }
+         console.log('//GUIA ENVIA LA UBICACION AL GRUPO DE TODOS LOS TURISTAS//', locations)
          io.to(locations.key).emit('locationsTuristas', locations);
        
+    })
+
+    socket.on('finalizarRecorrido', (data)=>{
+        io.to(data.key).emit('finRecorrido');
     })
 
     socket.on('disconnect', () => {
