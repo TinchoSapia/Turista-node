@@ -213,18 +213,20 @@ io.on('connection', (socket) => {
                }
             }
             const recorridoEncontrado = recorridosEnCursoSocket[i];
+            
             console.log('//RECORRIDO ENCONTRADO// ', recorridoEncontrado); 
+            console.log('//RECORRIDO ENCONTRADO [1]// ', recorridoEncontrado[1]);
+            console.log('//RECORRIDO ENCONTRADO .locationTuristas// ', recorridoEncontrado.locationTuristas);
             if(isRecorridoEncontrado){
                 
                 console.log('//GUIA GUARDO EN EL SOCKET SU LOCATION//', location)
                 recorridosEnCursoSocket[i][0].locationActual = location;
             }
-            if(recorridosEnCursoSocket[i].locationTuristas){
-                for (let num = 0; num < recorridoEncontrado[1].length; i++){
-                    console.log('//SE LE ENVIAN AL GUIA TODAS LAS LOCATION DE TURISTAS GUARDADAS EN EL SOCKET', num, recorridoEncontrado[1][num])
-                    io.to(location.key).emit('turistaLocation', recorridoEncontrado[1][num] )
-                }
+            for (let num = 0; num < recorridoEncontrado[1].length; i++){
+                console.log('//SE LE ENVIAN AL GUIA TODAS LAS LOCATION DE TURISTAS GUARDADAS EN EL SOCKET', num, recorridoEncontrado[1][num])
+                io.to(location.key).emit('turistaLocation', recorridoEncontrado[1][num] )
             }
+            
             
             console.log('//GUIA MANDA UBICACION AL ROOM//')
             io.to(location.key).emit('guiaLocation', location)
