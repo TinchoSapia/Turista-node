@@ -204,6 +204,7 @@ io.on('connection', (socket) => {
             socket.join(location.key);
             let i = 0;
             let isRecorridoEncontrado = false;
+            console.log('//LISTA DE RECORRIDOS EN CURSO// ',recorridosEnCursoSocket)
             while(i< recorridosEnCursoSocket.length && !isRecorridoEncontrado){
                if(recorridosEnCursoSocket[i].id == location.key){
                    isRecorridoEncontrado = true;
@@ -231,6 +232,7 @@ io.on('connection', (socket) => {
             socket.join(location.key);
             let i = 0;
             let isRecorridoEncontrado = false;
+            console.log('//LISTA DE RECORRIDOS EN CURSO// ',recorridosEnCursoSocket)
             while(i< recorridosEnCursoSocket.length && !isRecorridoEncontrado){
                if(recorridosEnCursoSocket[i].id == location.key){
                    isRecorridoEncontrado = true;
