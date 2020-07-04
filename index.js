@@ -126,8 +126,12 @@ io.on('connection', (socket) => {
 
     //EL RECORRIDO INICIA Y ES RETIRADO DE LA LISTA DE RECORRIDOS POR EMPEZAR, FALTA AGREGAR LA ACTUALIZACION DE LA LISTA A LOS USUARIOS
     socket.on('iniciarRecorrido', (data)=>{
-        const recorridoEncontrado = recorridosPorEmpezarSocket.find(recorrido => recorrido.id == data.key); 
+        const recorridoEncontrado = recorridosPorEmpezarSocket.filter((recorrido) => {
+            return recorrido.id == data.key;
+        });
+         console.log('ESTA FUNCIONANDO?', recorridoEncontrado)              
         recorridosEnCursoSocket.push(recorridoEncontrado);
+
         const nuevaLista =  recorridosPorEmpezarSocket.filter((recorrido) => {
             return recorrido.id != data.key;
          });
