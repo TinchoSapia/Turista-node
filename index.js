@@ -212,13 +212,15 @@ io.on('connection', (socket) => {
                    i++;
                }
             }
+            const recorridoEncontrado = recorridosEnCursoSocket[i];
+            console.log('//RECORRIDO ENCONTRADO// ', recorridoEncontrado);
             if(isRecorridoEncontrado){
                 
                 console.log('//GUIA GUARDO EN EL SOCKET SU LOCATION//', location)
                 recorridosEnCursoSocket[i][0].locationActual = location;
             }
             if(recorridosEnCursoSocket[i].locationTuristas){
-                for (let num = 0; num < recorridosEnCursoSocket[i].locationTuristas.length; i++){
+                for (let num = 0; num < recorridoEncontrado.locationTuristas.length; i++){
                     console.log('//SE LE ENVIAN AL GUIA TODAS LAS LOCATION DE TURISTAS GUARDADAS EN EL SOCKET', num)
                     io.to(location.key).emit('turistaLocation', recorridosEnCursoSocket[i].locationTuristas[num] )
                 }
