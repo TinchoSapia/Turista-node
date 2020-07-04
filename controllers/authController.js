@@ -42,6 +42,7 @@ function signIn(req, res){
                 message: `Te has logeado correctamente`,
                 token: service.createToken(user),
                 role: user.role,
+                nombre: user.nombre +' '+ user.apellido,
                 //localStorage: setItem('token', user.token)
         
               });

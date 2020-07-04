@@ -33,8 +33,8 @@ mongoose.connect(process.env.DB, {useNewUrlParser:true, useUnifiedTopology:true}
     }
     console.log(chalk.green('Base de datos conectada..'))
    //process.env.PORT
-    server.listen(process.env.PORT, () => {
-        console.log(chalk.blue(`Corriendo en puerto: ${process.env.PORT}`))
+    server.listen(process.env.PORT || process.env.ALT_PORT, () => {
+        console.log(chalk.blue(`Corriendo en puerto: ${process.env.ALT_PORT}`))
     });
 });
 //io listener
@@ -126,12 +126,19 @@ io.on('connection', (socket) => {
 
     //EL RECORRIDO INICIA Y ES RETIRADO DE LA LISTA DE RECORRIDOS POR EMPEZAR, FALTA AGREGAR LA ACTUALIZACION DE LA LISTA A LOS USUARIOS
     socket.on('iniciarRecorrido', (data)=>{
-        const recorridoEncontrado = recorridosPorEmpezarSocket.find(recorrido => recorrido.id == data.key); 
+        const recorridoEncontrado = recorridosPorEmpezarSocket.filter((recorrido) => {
+            return recorrido.id == data.key;
+        });
+         console.log('ESTA FUNCIONANDO?', recorridoEncontrado)    
+         recorridoEncontrado.locationTuristas = [];          
         recorridosEnCursoSocket.push(recorridoEncontrado);
+
         const nuevaLista =  recorridosPorEmpezarSocket.filter((recorrido) => {
             return recorrido.id != data.key;
          });
          recorridosPorEmpezarSocket = nuevaLista;
+         io.sockets.emit('guidesData', recorridosPorEmpezarSocket);
+         io.to(data.key).emit('iniciarRecorrido');
     })
     
     //UN TURISTA SE UNE A UN RECORRIDO DE LA LISTA, Y ENVÍA AL GUÍA LA INFORMACIÓN DE QUE ALGUIEN SE UNIÓ
@@ -190,9 +197,104 @@ io.on('connection', (socket) => {
         if(isRecorridoEncontrado){
             io.to(recorrido).emit('recorridoData', (recorridosPorEmpezarSocket[i]));
         }
-
     })
     
+    socket.on('shareGuideLocationGrupo', (location)=>{
+            console.log('//ENTRO GUIA AL SOCKET//', location)
+            socket.join(location.key);
+            let i = 0;
+            let isRecorridoEncontrado = false;
+            console.log('//LISTA DE RECORRIDOS EN CURSO// ',recorridosEnCursoSocket)
+            while(i< recorridosEnCursoSocket.length && !isRecorridoEncontrado){
+               if(recorridosEnCursoSocket[i][0].id == location.key){
+                   isRecorridoEncontrado = true;
+               }else{
+                   i++;
+               }
+            }
+            const recorridoEncontrado = recorridosEnCursoSocket[i];
+            
+            console.log('//RECORRIDO ENCONTRADO// ', recorridoEncontrado); 
+            console.log('//RECORRIDO ENCONTRADO .locationTuristas// ', recorridoEncontrado.locationTuristas);
+            if(isRecorridoEncontrado){
+                
+                console.log('//GUIA GUARDO EN EL SOCKET SU LOCATION//', location)
+                recorridosEnCursoSocket[i][0].locationActual = location;
+            }
+            if (typeof recorridoEncontrado.locationTuristas !== 'undefined' && recorridoEncontrado.locationTuristas.length > 0) {
+                // the array is defined and has at least one element
+                for (let num = 0; num < recorridoEncontrado.locationTuristas.length; num++){
+                    console.log('//SE LE ENVIAN AL GUIA TODAS LAS LOCATION DE TURISTAS GUARDADAS EN EL SOCKET', recorridoEncontrado.locationTuristas[num])
+                    io.to(location.key).emit('locationTurista', recorridoEncontrado.locationTuristas[num] )
+                }
+            }
+            
+            
+            
+            console.log('//GUIA MANDA UBICACION AL ROOM//')
+            io.to(location.key).emit('guiaLocation', location)
+        
+        
+    })
+    socket.on('shareTuristaLocationGrupo', (location)=>{
+            
+            console.log('//ENTRO TURISTA AL SOCKET//', location)
+            socket.join(location.key);
+            let i = 0;
+            let isRecorridoEncontrado = false;
+            console.log('//LISTA DE RECORRIDOS EN CURSO// ',recorridosEnCursoSocket)
+            while(i< recorridosEnCursoSocket.length && !isRecorridoEncontrado){
+               if(recorridosEnCursoSocket[i][0].id == location.key){
+                   isRecorridoEncontrado = true;
+               }else{
+                   i++;
+               }
+            }
+            if(isRecorridoEncontrado){
+                
+                console.log('//TURISTA GUARDA EN EL SOCKET SU UBICACION//')
+                if(recorridosEnCursoSocket[i].locationTuristas.length > 0){
+                    recorridosEnCursoSocket[i].locationTuristas = recorridosEnCursoSocket[i].locationTuristas.filter((tempLocation)=>{
+                        return tempLocation.nombre != location.nombre;
+                    })
+                    recorridosEnCursoSocket[i].locationTuristas.push(location);
+                }else{
+                    recorridosEnCursoSocket[i].locationTuristas.push(location);
+                }
+            }
+            
+            console.log('//TURISTA ENVIA SU UBICACION AL ROOM//')
+            io.to(location.key).emit('locationTurista', location)
+            console.log('//GUIA LOCATION//', recorridosEnCursoSocket[i][0].locationActual);
+            io.to(location.key).emit('guiaLocation', recorridosEnCursoSocket[i][0].locationActual);
+        
+    })
+
+    socket.on('updateLocationsTuristas', (locations)=>{
+        let i = 0;
+        let isRecorridoEncontrado = false;
+        while(i< recorridosEnCursoSocket.length && !isRecorridoEncontrado){
+            if(recorridosEnCursoSocket[i][0].id == location.key){
+                isRecorridoEncontrado = true;
+            }else{
+                i++;
+            }
+         }
+         if(isRecorridoEncontrado){
+            
+            console.log('//GUIA ENVIA SU UBICACION AL GRUPO DE NUEVO DESDE UPDATE LOCATIONS//', location)
+            io.to(locations.key).emit('guiaLocation', recorridosEnCursoSocket[i].locationActual)
+           
+         }
+         console.log('//GUIA ENVIA LA UBICACION AL GRUPO DE TODOS LOS TURISTAS//', locations)
+         io.to(locations.key).emit('locationsTuristas', locations);
+       
+    })
+
+    socket.on('finalizarRecorrido', (data)=>{
+        io.to(data.key).emit('finRecorrido');
+    })
+
     socket.on('disconnect', () => {
       console.log('user disconnected');
     });
