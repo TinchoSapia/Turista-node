@@ -98,10 +98,10 @@ async function unirseRecorridoInstancia(req, res){
         if(err){
             return [];
         }else{
-            return result;
+            return result.recorridosFinalizados;
         }
     })
-    const recorridosGuardados = User.findByIdAndUpdate(userId,{'recorridosFinalizados': [...recorridosFinalizadosUsuario, recorridoInstanciaId]}, function(err,result){
+    const recorridosGuardados = await User.findByIdAndUpdate(userId,{'recorridosFinalizados': [...recorridosFinalizadosUsuario, recorridoInstanciaId]}, function(err,result){
         if (err){
             return res.status(403).send({message: `No se pudo realizar la inscripción`});
         }else{
