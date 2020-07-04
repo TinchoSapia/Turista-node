@@ -94,35 +94,6 @@ async function unirseRecorridoInstancia(req, res){
     
     const nuevaListaUsuarios = [...recorridoInstanciaEncontrado.usuariosInscriptos, userId]
     console.log('3 // nuevaListaUsuarios :',nuevaListaUsuarios);
-    const recorridosFinalizadosUsuario = await User.findById(userId, function(err,result){
-        if(err){
-            return null;
-        }else{
-            if (result.recorridosFinalizados){
-                return result.recorridosFinalizados;
-            }else{
-                return null;
-            }
-        }
-    })
-    const recorridosGuardados;
-    if(recorridosFinalizadosUsuario){
-        recorridosGuardados = await User.findByIdAndUpdate(userId,{'recorridosFinalizados': [...recorridosFinalizadosUsuario, recorridoInstanciaId]}, function(err,result){
-            if (err){
-                return res.status(403).send({message: `No se pudo realizar la inscripción`});
-            }else{
-                return result;
-            }
-        })
-    }else{
-        recorridosGuardados = await User.findByIdAndUpdate(userId,{'recorridosFinalizados': [recorridoInstanciaId]}, function(err,result){
-            if (err){
-                return res.status(403).send({message: `No se pudo realizar la inscripción`});
-            }else{
-                return result;
-            }
-        })
-    }
     
 
     RecorridoInstancia.findByIdAndUpdate(recorridoInstanciaId,{"usuariosInscriptos": nuevaListaUsuarios}, function(err, result){
@@ -208,7 +179,24 @@ async function terminarRecorridoInstancia(req, res){
           return;
         }
         recorrido.estado = "Finalizado";
-        
+        for (i=0; i < recorrido.usuariosInscriptos.length; i++){
+            User.findById(recorrido.usuariosInscriptos[i], function(err,result){
+                if (err){
+                    return res.status(500).send({message: `Error al finalizar recorrido ${err}`});  
+                }else{
+                    if (result.recorridosFinalizados && result.recorridosFinalizados.length > 0){
+                        result.recorridosFinalizados = [...result.recorridosFinalizados, recorrido];
+                    }else{
+                        result.recorridosFinalizados = [recorrido];
+                    }
+                    result.save(function(err){
+                        if (err){
+                            return res.status(500).send({message: `Error al finalizar recorrido ${err}`});
+                        }
+                    })
+                }
+            })
+        }
         recorrido.save(function(err) {
             if (err){
                return res.status(500).send({message: `Error al finalizar recorrido ${err}`});     
