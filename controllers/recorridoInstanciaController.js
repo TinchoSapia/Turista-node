@@ -96,18 +96,34 @@ async function unirseRecorridoInstancia(req, res){
     console.log('3 // nuevaListaUsuarios :',nuevaListaUsuarios);
     const recorridosFinalizadosUsuario = await User.findById(userId, function(err,result){
         if(err){
-            return [];
+            return null;
         }else{
-            return result.recorridosFinalizados;
+            if (result.recorridosFinalizados){
+                return result.recorridosFinalizados;
+            }else{
+                return null;
+            }
         }
     })
-    const recorridosGuardados = await User.findByIdAndUpdate(userId,{'recorridosFinalizados': [...recorridosFinalizadosUsuario, recorridoInstanciaId]}, function(err,result){
-        if (err){
-            return res.status(403).send({message: `No se pudo realizar la inscripción`});
-        }else{
-            return result;
-        }
-    })
+    const recorridosGuardados;
+    if(recorridosFinalizadosUsuario){
+        recorridosGuardados = await User.findByIdAndUpdate(userId,{'recorridosFinalizados': [...recorridosFinalizadosUsuario, recorridoInstanciaId]}, function(err,result){
+            if (err){
+                return res.status(403).send({message: `No se pudo realizar la inscripción`});
+            }else{
+                return result;
+            }
+        })
+    }else{
+        recorridosGuardados = await User.findByIdAndUpdate(userId,{'recorridosFinalizados': [recorridoInstanciaId]}, function(err,result){
+            if (err){
+                return res.status(403).send({message: `No se pudo realizar la inscripción`});
+            }else{
+                return result;
+            }
+        })
+    }
+    
 
     RecorridoInstancia.findByIdAndUpdate(recorridoInstanciaId,{"usuariosInscriptos": nuevaListaUsuarios}, function(err, result){
 
