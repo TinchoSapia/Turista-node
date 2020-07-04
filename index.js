@@ -226,7 +226,7 @@ io.on('connection', (socket) => {
                 // the array is defined and has at least one element
                 for (let num = 0; num < recorridoEncontrado.locationTuristas.length; num++){
                     console.log('//SE LE ENVIAN AL GUIA TODAS LAS LOCATION DE TURISTAS GUARDADAS EN EL SOCKET', recorridoEncontrado.locationTuristas[num])
-                    io.to(location.key).emit('turistaLocation', recorridoEncontrado.locationTuristas[num] )
+                    io.to(location.key).emit('locationTurista', recorridoEncontrado.locationTuristas[num] )
                 }
             }
             
