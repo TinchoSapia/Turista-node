@@ -94,7 +94,7 @@ async function unirseRecorridoInstancia(req, res){
     
     const nuevaListaUsuarios = [...recorridoInstanciaEncontrado.usuariosInscriptos, userId]
     console.log('3 // nuevaListaUsuarios :',nuevaListaUsuarios);
-    const recorridosFinalizadosUsuario = await User.FindById(userId, function(err,result){
+    const recorridosFinalizadosUsuario = await User.findById(userId, function(err,result){
         if(err){
             return [];
         }else{
