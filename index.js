@@ -209,7 +209,7 @@ io.on('connection', (socket) => {
     socket.on('shareTuristaLocationGrupo', (location)=>{
        
             socket.join(location.key);
-            console.log('2.b//envio ubicacion turista a grupo')
+            console.log('2.b//envio ubicacion turista a grupo key:', location.key)
             io.to(location.key).emit('locationTurista', location)
         
     })

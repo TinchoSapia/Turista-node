@@ -28,7 +28,7 @@ async function getRecorridosInstancia(req, res){
         for(let i = 0; i<user.recorridosFinalizados.length;i++){    
              await RecorridoInstancia.findById(user.recorridosFinalizados[i] , (err, recorridoInstancia) =>{
                 if (!err){
-                    recorridos.push(recorridoInstancia);
+                        recorridos.push(recorridoInstancia);
                 }
             })
             if (user.recorridosFinalizados.length == recorridos.length){
@@ -91,8 +91,24 @@ async function unirseRecorridoInstancia(req, res){
         res.status(403).send({message: `Recorrido en curso, o finalizado.` });
              return;
     }
+    
     const nuevaListaUsuarios = [...recorridoInstanciaEncontrado.usuariosInscriptos, userId]
     console.log('3 // nuevaListaUsuarios :',nuevaListaUsuarios);
+    const recorridosFinalizadosUsuario = await User.FindById(userId, function(err,result){
+        if(err){
+            return [];
+        }else{
+            return result;
+        }
+    })
+    const recorridosGuardados = User.findByIdAndUpdate(userId,{'recorridosFinalizados': [...recorridosFinalizadosUsuario, recorridoInstanciaId]}, function(err,result){
+        if (err){
+            return res.status(403).send({message: `No se pudo realizar la inscripción`});
+        }else{
+            return result;
+        }
+    })
+
     RecorridoInstancia.findByIdAndUpdate(recorridoInstanciaId,{"usuariosInscriptos": nuevaListaUsuarios}, function(err, result){
 
         if(err){
@@ -181,9 +197,7 @@ async function terminarRecorridoInstancia(req, res){
             if (err){
                return res.status(500).send({message: `Error al finalizar recorrido ${err}`});     
             } 
-            for(let i =0;i<recorrido.usuariosInscriptos.length;i++){
-                recorrido.usuariosInscriptos[i].recorridosFinalizados.push(recorrido);
-            }
+            
             return res.status(200).send({message: `El recorrido ha sido finalizado`});
         })
     })
