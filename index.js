@@ -200,48 +200,18 @@ io.on('connection', (socket) => {
     
     socket.on('shareGuideLocationGrupo', (location)=>{
         
-        let i = 0;
-        let isRecorridoEncontrado = false;
-        while(i< recorridosEnCursoSocket.length && !isRecorridoEncontrado){
-           if(recorridosEnCursoSocket[i].id == location.key){
-               isRecorridoEncontrado = true;
-           }else{
-               i++;
-           }
-        }
-
-        if(isRecorridoEncontrado){
-            recorridosEnCursoSocket[i].locationActual = location.coordinates;
-            if(!recorridosEnCursoSocket[i].locationActualTuristas){
-                recorridosEnCursoSocket[i].locationActualTuristas = [];
-            }
             socket.join(location.key);
             console.log('2//envio ubicacion guia a grupo')
             io.to(location.key).emit('guiaLocation', location)
-        }
+        
         
     })
     socket.on('shareTuristaLocationGrupo', (location)=>{
-        let i = 0;
-        let isRecorridoEncontrado = false;
-        while(i< recorridosEnCursoSocket.length && !isRecorridoEncontrado){
-           if(recorridosEnCursoSocket[i].id == location.key){
-               isRecorridoEncontrado = true;
-           }else{
-               i++;
-           }
-        }
-
-        if(isRecorridoEncontrado){
-            if(recorridosEnCursoSocket[i].locationActualTuristas.length < 1 || !recorridosEnCursoSocket[i].locationActualTuristas){
-                recorridosEnCursoSocket[i].locationActualTuristas = [location];
-            }else{
-                recorridosEnCursoSocket[i].locationActualTuristas = [...recorridosEnCursoSocket[i].locationActualTuristas,location];
-            }
+       
             socket.join(location.key);
             console.log('2.b//envio ubicacion turista a grupo')
             io.to(location.key).emit('locationTurista', location)
-        }
+        
     })
 
     socket.on('updateLocationsTuristas', (locations)=>{
@@ -257,8 +227,9 @@ io.on('connection', (socket) => {
          if(isRecorridoEncontrado){
             console.log('4// envio updates a todos los turistas y la mia propia')
             io.to(locations.key).emit('guiaLocation', recorridosEnCursoSocket[i].locationActual)
-            io.to(locations.key).emit('locationsTuristas', locations);
+           
          }
+         io.to(locations.key).emit('locationsTuristas', locations);
        
     })
 
