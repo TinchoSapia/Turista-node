@@ -179,6 +179,22 @@ async function terminarRecorridoInstancia(req, res){
           return;
         }
         recorrido.estado = "Finalizado";
+        User.findById(userId, function(err,result){
+            if (err){
+                return res.status(500).send({message: `Error al finalizar recorrido ${err}`});  
+            }else{
+                if (result.recorridosFinalizados && result.recorridosFinalizados.length > 0){
+                result.recorridosFinalizados = [...result.recorridosFinalizados, recorrido];
+                }else{
+                    result.recorridosFinalizados = [recorrido];
+                }
+                result.save(function(err){
+                    if (err){
+                        return res.status(500).send({message: `Error al finalizar recorrido ${err}`});
+                    }
+                })
+            }
+        })
         for (i=0; i < recorrido.usuariosInscriptos.length; i++){
             User.findById(recorrido.usuariosInscriptos[i], function(err,result){
                 if (err){
