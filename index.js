@@ -231,7 +231,7 @@ io.on('connection', (socket) => {
             
             
             
-            console.log('//GUIA MANDA UBICACION AL ROOM//')
+            console.log('//GUIA MANDA UBICACION AL ROOM//', location)
             io.to(location.key).emit('guiaLocation', location)
         
         
