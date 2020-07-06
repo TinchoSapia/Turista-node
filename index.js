@@ -266,7 +266,7 @@ io.on('connection', (socket) => {
             console.log('//TURISTA ENVIA SU UBICACION AL ROOM//')
             io.to(location.key).emit('locationTurista', location)
             if (typeof recorridosEnCursoSocket[i][0].locationGuia !== 'undefined' && recorridosEnCursoSocket[i][0].locationGuia !== null && recorridosEnCursoSocket[i][0].locationGuia) {
-                io.to(location.key).emit('guiaLocation', recorridosEnCursoSocket[i][0].locationActual);
+                io.to(location.key).emit('guiaLocation', recorridosEnCursoSocket[i][0].locationGuia);
             }
         
     })
@@ -275,7 +275,7 @@ io.on('connection', (socket) => {
         let i = 0;
         let isRecorridoEncontrado = false;
         while(i< recorridosEnCursoSocket.length && !isRecorridoEncontrado){
-            if(recorridosEnCursoSocket[i][0].id == location.key){
+            if(recorridosEnCursoSocket[i][0].id == locations.key){
                 isRecorridoEncontrado = true;
             }else{
                 i++;
@@ -283,12 +283,12 @@ io.on('connection', (socket) => {
          }
          if(isRecorridoEncontrado){
             
-            console.log('//GUIA ENVIA SU UBICACION AL GRUPO DE NUEVO DESDE UPDATE LOCATIONS//', location)
-            io.to(locations.key).emit('guiaLocation', recorridosEnCursoSocket[i].locationActual)
+            console.log('//GUIA ENVIA SU UBICACION AL GRUPO DE NUEVO DESDE UPDATE LOCATIONS//', locations)
+            io.to(locations.key).emit('guiaLocation', recorridosEnCursoSocket[i][0].locationGuia)
            
          }
          console.log('//GUIA ENVIA LA UBICACION AL GRUPO DE TODOS LOS TURISTAS//', locations)
-         io.to(locations.key).emit('locationsTuristas', locations);
+         io.to(locations.key).emit('locationsTuristas', locations.locations);
        
     })
 
