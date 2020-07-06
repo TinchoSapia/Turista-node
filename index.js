@@ -266,7 +266,9 @@ io.on('connection', (socket) => {
             console.log('//TURISTA ENVIA SU UBICACION AL ROOM//')
             io.to(location.key).emit('locationTurista', location)
             console.log('//GUIA LOCATION//', recorridosEnCursoSocket[i][0].locationActual);
+            if (typeof recorridosEnCursoSocket[i][0].locationActual !== 'undefined' && recorridosEnCursoSocket[i][0].locationActual !== null) {
             io.to(location.key).emit('guiaLocation', recorridosEnCursoSocket[i][0].locationActual);
+            }
         
     })
 
