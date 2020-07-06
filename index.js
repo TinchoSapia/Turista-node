@@ -219,7 +219,7 @@ io.on('connection', (socket) => {
             if(isRecorridoEncontrado){
                 
                 console.log('//GUIA GUARDO EN EL SOCKET SU LOCATION//', location)
-                recorridosEnCursoSocket[i][0].locationActual = location;
+                recorridosEnCursoSocket[i][0].locationGuia = location;
             }
             if (typeof recorridoEncontrado.locationTuristas !== 'undefined' && recorridoEncontrado.locationTuristas.length > 0) {
                 // the array is defined and has at least one element
@@ -265,9 +265,8 @@ io.on('connection', (socket) => {
             
             console.log('//TURISTA ENVIA SU UBICACION AL ROOM//')
             io.to(location.key).emit('locationTurista', location)
-            console.log('//GUIA LOCATION//', recorridosEnCursoSocket[i][0].locationActual);
-            if (typeof recorridosEnCursoSocket[i][0].locationActual !== 'undefined' && recorridosEnCursoSocket[i][0].locationActual !== null) {
-            io.to(location.key).emit('guiaLocation', recorridosEnCursoSocket[i][0].locationActual);
+            if (typeof recorridosEnCursoSocket[i][0].locationGuia !== 'undefined' && recorridosEnCursoSocket[i][0].locationGuia !== null && recorridosEnCursoSocket[i][0].locationGuia) {
+                io.to(location.key).emit('guiaLocation', recorridosEnCursoSocket[i][0].locationActual);
             }
         
     })
