@@ -22,10 +22,10 @@
   "homepage": "https://github.com/TinchoSapia/Turista-node#readme",
   "dependencies": {
     "bcrypt-nodejs": "0.0.3",
-    "body-parser": "^1.19.0",
+    "body-parser": "^1.20.1",
     "chalk": "^4.0.0",
     "dotenv": "^8.2.0",
-    "express": "^4.17.1",
+    "express": "^4.18.2",
     "jsonwebtoken": "^8.5.1",
     "jwt-decode": "^2.2.0",
     "jwt-simple": "^0.5.6",
